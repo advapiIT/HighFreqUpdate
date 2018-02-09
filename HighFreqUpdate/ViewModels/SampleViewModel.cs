@@ -51,7 +51,7 @@ namespace HighFreqUpdate.ViewModels
         private Timer timer;
         private DispatcherTimer dispatcherTimer = new DispatcherTimer();
 
-        private const double dispatcherInterval = 2000;
+        private const double dispatcherInterval = 250;
 
         public SampleViewModel(IDispatcherService dispatcherService)
         {
@@ -62,7 +62,7 @@ namespace HighFreqUpdate.ViewModels
 
             dispatcherTimer.Interval = TimeSpan.FromMilliseconds(dispatcherInterval);
             dispatcherTimer.Tick += DispatcherTimer_Tick1;
-            timer = new Timer(3000);
+            timer = new Timer(5000);
             timer.Elapsed += Timer_Elapsed;
 
             timer.Start();

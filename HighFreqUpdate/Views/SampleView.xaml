@@ -50,7 +50,7 @@
                 <Storyboard x:Key="storyboard" Completed="Storyboard_OnCompleted" AutoReverse="True" >
                     <ColorAnimation
                         Storyboard.TargetProperty="Background.Color" 
-                        From="Fuchsia" To="Yellow" Duration="0:0:2"
+                        To="Red" Duration="0:0:2"
                         FillBehavior="HoldEnd"
                           />
                 </Storyboard>
