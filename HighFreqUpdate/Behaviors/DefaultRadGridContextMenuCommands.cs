@@ -1,6 +1,10 @@
-﻿using Catel.MVVM;
+﻿using System.Linq;
+using Catel.MVVM;
 using Catel.Services;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 using Infragistics.Windows.DataPresenter;
 
 namespace HighFreqUpdate.Behaviors
@@ -296,6 +300,12 @@ namespace HighFreqUpdate.Behaviors
         public static TaskCommand<HeaderCommandParameter> ChangeFontCommand { get; }
         private static Task OnChangeFontCommandExecute(HeaderCommandParameter parameter)
         {
+            var g = parameter.Grid;
+
+            g.SetValue(Control.FontSizeProperty, 30.0);
+            g.SetValue(Control.FontFamilyProperty, new FontFamily("Arial"));
+            g.SetValue(Control.FontStyleProperty, FontStyles.Italic);
+
             return Task.FromResult(0);
             //Argument.IsNotNull(() => parameter);
 
@@ -332,6 +342,22 @@ namespace HighFreqUpdate.Behaviors
         //refactor
         private static Task OnChangeColorCommandExecute(HeaderCommandParameter parameter)
         {
+            var g = parameter.Grid;
+
+            var fL = g.FieldLayouts;
+
+            var fLF = fL.First();
+
+            var fields = fLF.Fields;
+
+            var field = fields[1];
+
+            var style = new Style();
+
+            style.Setters.Add(new Setter (Control.BackgroundProperty , new SolidColorBrush(Colors.Red)));
+            style.Setters.Add(new Setter (Control.ForegroundProperty , new SolidColorBrush(Colors.Yellow)));
+
+            field.CellValuePresenterStyle = style;
             return Task.FromResult(0);
             //var manageColorModel = new ManageColorModelRadGrid
             //{
@@ -417,8 +443,8 @@ namespace HighFreqUpdate.Behaviors
             //ClearSettingsCommand = new Command<HeaderCommandParameter>(OnClearSettingsCommandExecute, CanResetSettingsCommandExecute);
             //SetDefaultCommand = new Command<HeaderCommandParameter>(OnSetDefaultCommandExecute, CanSetDefaultCommandExecute);
 
-            //ChangeFontCommand = new TaskCommand<HeaderCommandParameter>(OnChangeFontCommandExecute);
-            //ChangeColorCommand = new TaskCommand<HeaderCommandParameter>(OnChangeColorCommandExecute);
+            ChangeFontCommand = new TaskCommand<HeaderCommandParameter>(OnChangeFontCommandExecute);
+            ChangeColorCommand = new TaskCommand<HeaderCommandParameter>(OnChangeColorCommandExecute);
 
             //BaseStyle = Application.Current.FindResource("GridViewCellCoreStyle") as System.Windows.Style;
         }

@@ -4,8 +4,10 @@ using Infragistics.Windows.DataPresenter;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Interactivity;
+using Infragistics.Windows.Controls;
 
 namespace HighFreqUpdate.Behaviors
 {
@@ -264,15 +266,20 @@ namespace HighFreqUpdate.Behaviors
             // create menu items
             foreach (Field column in grid.FieldLayouts[0].Fields)
             {
-                XamMenuItem subMenu = new XamMenuItem();
-                subMenu.Header = column.Name;
-                subMenu.IsCheckable = true;
-                subMenu.IsChecked = true;
-                subMenu.StaysOpenOnClick = true;
+                XamMenuItem subMenu = new XamMenuItem
+                {
+                    Header = column.Name,
+                    IsCheckable = true,
+                    IsChecked = true,
+                    StaysOpenOnClick = true
+                };
 
-                Binding isCheckedBinding = new Binding("IsVisible");
-                isCheckedBinding.Mode = BindingMode.TwoWay;
-                isCheckedBinding.Source = column;
+                Binding isCheckedBinding = new Binding("Visibility")
+                {
+                    Mode = BindingMode.TwoWay,
+                    Source = column,
+                    Converter = new VisibilityToBooleanConverter()
+                };
 
                 // bind IsChecked menu item property to IsVisible column property
                 subMenu.SetBinding(XamMenuItem.IsCheckedProperty, isCheckedBinding);

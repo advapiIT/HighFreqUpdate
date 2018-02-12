@@ -74,14 +74,14 @@
                             <SolidColorBrush Color="Transparent" />
                         </Setter.Value>
                     </Setter>
-                    <Style.Triggers>
+                    <!--<Style.Triggers>
                         <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Record.DataItem.IsChanged}" Value="True">
                             <DataTrigger.EnterActions>
                                 <BeginStoryboard Storyboard="{StaticResource storyboard}"></BeginStoryboard>
                              
                             </DataTrigger.EnterActions>
                         </DataTrigger>
-                    </Style.Triggers>
+                    </Style.Triggers>-->
                 </Style>
             </igDP:XamDataGrid.Resources>
             <igDP:XamDataGrid.FieldSettings>
@@ -104,14 +104,14 @@
                     </igDP:Field>
                     <igDP:Field Name="Trader"/>
                     <igDP:Field Name="Portfolio"/>
-                    <igDP:Field Name="InstrumentCross"/>
-                    <igDP:Field Name="InstrumentCurrency1Description"/>
-                    <igDP:Field Name="InstrumentCurrency2Description"/>
-                    <igDP:Field Name="Data"/>
-                    <igDP:Field Name="Ora"/>
-                    <igDP:Field Name="ValutaSpot"/>
+                    <igDP:Field Name="InstrumentCross" HorizontalContentAlignment="Center"/>
+                    <igDP:Field Name="InstrumentCurrency1Description" HorizontalContentAlignment="Center"/>
+                    <igDP:Field Name="InstrumentCurrency2Description" HorizontalContentAlignment="Center"/>
+                    <igDP:Field Name="Data" HorizontalContentAlignment="Center" Format="dd/MM/yyyy"/>
+                    <igDP:Field Name="Ora" HorizontalContentAlignment="Center" Format="HH:mm:ss"/>
+                    <igDP:Field Name="ValutaSpot" HorizontalContentAlignment="Center" Format="dd/MM/yyyy"/>
                     <igDP:Field Name="Sign"/>
-                    <igDP:Field Name="QtaDiv1"/>
+                    <igDP:Field Name="QtaDiv1" />
                     <igDP:Field Name="Cambio"/>
                     <igDP:Field Name="QtaDiv2"/>
                     <igDP:Field Name="IdCtp"/>
