@@ -14,6 +14,8 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -36,6 +38,9 @@
   <ItemGroup>
     <Reference Include="Catel.Core, Version=5.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Catel.Core.5.2.0\lib\net45\Catel.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Catel.Fody.Attributes, Version=2.20.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Catel.Fody.2.20.0\lib\netstandard1.0\Catel.Fody.Attributes.dll</HintPath>
     </Reference>
     <Reference Include="Catel.MVVM, Version=5.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Catel.MVVM.5.2.0\lib\net45\Catel.MVVM.dll</HintPath>
@@ -71,7 +76,12 @@
       <HintPath>..\packages\ServiceStack.Text.5.0.2\lib\net45\ServiceStack.Text.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Catel.MVVM.5.2.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
       <Private>True</Private>
@@ -84,6 +94,23 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="Telerik.Windows.Controls, Version=2018.1.122.45, Culture=neutral, PublicKeyToken=5803cfa389c90ce7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Telerik.Windows.Controls.for.Wpf.2018.1.122\lib\net45\Telerik.Windows.Controls.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Controls.Input, Version=2018.1.122.45, Culture=neutral, PublicKeyToken=5803cfa389c90ce7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Telerik.Windows.Controls.Input.for.Wpf.2018.1.122\lib\net45\Telerik.Windows.Controls.Input.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Controls.Navigation, Version=2018.1.122.45, Culture=neutral, PublicKeyToken=5803cfa389c90ce7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Telerik.Windows.Controls.Navigation.for.Wpf.2018.1.122\lib\net45\Telerik.Windows.Controls.Navigation.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Data, Version=2018.1.122.45, Culture=neutral, PublicKeyToken=5803cfa389c90ce7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Telerik.Windows.Data.for.Wpf.2018.1.122\lib\net45\Telerik.Windows.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Themes.Windows7, Version=2018.1.122.45, Culture=neutral, PublicKeyToken=5803cfa389c90ce7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Telerik.Windows.Themes.Windows7.for.Wpf.2018.1.122\lib\net45\Telerik.Windows.Themes.Windows7.dll</HintPath>
+    </Reference>
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="UIAutomationTypes" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -95,15 +122,29 @@
     </ApplicationDefinition>
     <Compile Include="Behaviors\ContextMenuDefaultOperationBehavior.cs" />
     <Compile Include="Behaviors\DefaultRadGridContextMenuCommands.cs" />
+    <Compile Include="Behaviors\ScrollIntoViewBehavior.cs" />
     <Compile Include="Converters\IsNotNullToBoolean.cs" />
     <Compile Include="Converters\StatusRowColorStyleSelectorBase.cs" />
     <Compile Include="Enums\StatusTypeEnum.cs" />
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Helpers\ContextMenuHelper.cs" />
+    <Compile Include="Helpers\GridCustomizationHelpers.cs" />
+    <Compile Include="Helpers\GridRowSizeHelper.cs" />
     <Compile Include="Interfaces\IStatus.cs" />
+    <Compile Include="Models\ColumnItem.cs" />
     <Compile Include="Models\DealSpotVisual.cs" />
     <Compile Include="Models\DealVisualBase.cs" />
+    <Compile Include="Models\ManageColorModel.cs" />
+    <Compile Include="Models\ManageFontModel.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="ViewModels\Popups\ManageColorViewModel.cs" />
+    <Compile Include="ViewModels\Popups\ManageFontViewModel.cs" />
+    <Compile Include="Views\Popups\ManageColorView.xaml.cs">
+      <DependentUpon>ManageColorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Popups\ManageFontView.xaml.cs">
+      <DependentUpon>ManageFontView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\SampleView.xaml.cs">
       <DependentUpon>SampleView.xaml</DependentUpon>
     </Compile>
@@ -112,6 +153,14 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ViewModels\SampleViewModel.cs" />
+    <Page Include="Views\Popups\ManageColorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Popups\ManageFontView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\SampleView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -147,7 +196,17 @@
   <ItemGroup>
     <Folder Include="Services\Interfaces\" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="FodyWeavers.xml" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\Fody.2.0.2\build\dotnet\Fody.targets" Condition="Exists('..\packages\Fody.2.0.2\build\dotnet\Fody.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Fody.2.0.2\build\dotnet\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.2.0.2\build\dotnet\Fody.targets'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

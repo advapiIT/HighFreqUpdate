@@ -3,9 +3,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              StartupUri="/Views/SampleView.xaml">
     <Application.Resources>
-    
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Telerik.Windows.Themes.Windows7;component/Themes/System.Windows.xaml"/>
+                <ResourceDictionary Source="/Telerik.Windows.Themes.Windows7;component/Themes/Telerik.Windows.Controls.xaml"/>
+                <ResourceDictionary Source="/Telerik.Windows.Themes.Windows7;component/Themes/Telerik.Windows.Controls.Input.xaml"/>
+                <ResourceDictionary Source="/Telerik.Windows.Themes.Windows7;component/Themes/Telerik.Windows.Controls.Navigation.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
         <!-- Generic Catel theme -->
         <!--<ResourceDictionary Source="/Catel.Extensions.Controls;component/themes/generic.xaml" />-->
-        
+
     </Application.Resources>
 </Application>
