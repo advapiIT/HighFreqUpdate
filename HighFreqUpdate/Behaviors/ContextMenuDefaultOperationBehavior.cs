@@ -6,6 +6,8 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Interactivity;
+using Infragistics.Windows.Controls;
+using System.Text.RegularExpressions;
 
 namespace HighFreqUpdate.Behaviors
 {
@@ -14,22 +16,17 @@ namespace HighFreqUpdate.Behaviors
         private static string ForceKey = "force";
 
         #region Variables
-
         private IEnumerable<FrameworkElement> headerMenuItems;
         private IEnumerable<FrameworkElement> rowMenuItems;
         private bool isFirstLoad = true;
-
         #endregion
 
         #region Properties
-
         public bool ShowSaveSettings { get; set; } = true;
         public bool ShowManageSettings { get; set; } = false;
-
         #endregion
 
         #region Override
-
         protected override void OnAttached()
         {
             base.OnAttached();
@@ -41,7 +38,7 @@ namespace HighFreqUpdate.Behaviors
         {
             base.OnDetaching();
 
-            var contextMenu = Infragistics.Controls.Menus.ContextMenuService.GetManager(AssociatedObject);
+            var contextMenu = ContextMenuService.GetManager(AssociatedObject);
 
             if (contextMenu != null)
                 contextMenu.ContextMenu.Opening += ContextMenu_Opening;
@@ -54,46 +51,40 @@ namespace HighFreqUpdate.Behaviors
             var contextMenuManager = Infragistics.Controls.Menus.ContextMenuService.GetManager(AssociatedObject);
             var contextMenu = contextMenuManager.ContextMenu;
 
-            var row = e.GetClickedElements<DataRecordPresenter>();
+            List<CellValuePresenter> rows = e.GetClickedElements<CellValuePresenter>();
+            List<LabelPresenter> rowsHeader = e.GetClickedElements<LabelPresenter>();
 
-            if (row.Count == 0)
+            if (rowsHeader != null && rowsHeader.Any())
             {
-                e.Cancel = true;
-                return;
-            }
+                var row = rowsHeader.First();
 
-            var x = e.GetClickedElements<DataRecordPresenter>()[0].Record;
-
-            if (x is HeaderRecord)
-            {
                 foreach (var item in headerMenuItems.OfType<XamMenuItem>())
                 {
-                    item.Header = string.Format(item.Header.ToString(), x.Description);
-                    //    headerCell.Content != null ? ((TextBlock)headerCell.Content).Text : "");
+                    item.Header = new Regex(@"([""'])(\\?.)*?\1").Replace(item.Header.ToString(), $"\"{row.Content.ToString()}\"");
                     item.CommandParameter = new HeaderCommandParameter
                     {
-                        Grid = this.AssociatedObject,
-                        Column = x.Description,
+                        Grid = AssociatedObject,
+                        Column = row.Content.ToString(),
                         ViewModel = ContextMenuHelper.GetViewModelName(AssociatedObject)
                     };
                 }
 
                 contextMenu.ItemsSource = headerMenuItems;
             }
-            else if (row != null)
+            else if (rows != null && rows.Any())
             {
                 contextMenu.ItemsSource = rowMenuItems;
             }
             else
             {
-                var lst = headerMenuItems.OfType<FrameworkElement>().Where(y => (string)y.Tag == ForceKey).ToList();
+                var lst = headerMenuItems.Where(y => (string)y.Tag == ForceKey).ToList();
 
                 if (rowMenuItems != null)
                 {
                     if (lst.Any())
                         lst.Add(new XamMenuSeparator());
 
-                    var items = rowMenuItems.Where(y => x.Tag != null && (string)y.Tag == ForceKey).ToList();
+                    var items = rowMenuItems.Where(y => y.Tag != null && (string)y.Tag == ForceKey).ToList();
 
                     if (items.Any())
                     {
@@ -108,24 +99,19 @@ namespace HighFreqUpdate.Behaviors
                 }
                 else contextMenu.IsOpen = false;
             }
-
-
         }
-
-
         #endregion
 
         private void OnMenuItemLoaded(object sender, RoutedEventArgs e)
         {
             if (!isFirstLoad) return;
 
-            var contextMenu = Infragistics.Controls.Menus.ContextMenuService.GetManager(AssociatedObject);
+            var contextMenu = ContextMenuService.GetManager(AssociatedObject);
 
             if (contextMenu == null)
             {
                 contextMenu = ContextMenuHelper.CreateNewContextMenuWithDefaults();
-                Infragistics.Controls.Menus.ContextMenuService.SetManager(AssociatedObject, contextMenu);
-
+                ContextMenuService.SetManager(AssociatedObject, contextMenu);
             }
 
             ContextMenuHelper.SetDefaultValues(contextMenu.ContextMenu);
@@ -162,7 +148,6 @@ namespace HighFreqUpdate.Behaviors
                     Header = "Load",
                     Command = DefaultRadGridContextMenuCommands.LoadSettingsCommand,
                     CommandParameter = AssociatedObject,
-
                 };
 
                 lst.Add(loadSettings);
@@ -170,22 +155,18 @@ namespace HighFreqUpdate.Behaviors
                 XamMenuItem setDefault = new XamMenuItem
                 {
                     Tag = ForceKey,
-                    Header = "Set default",
+                    Header = "Imposta come layout di default",
                     Command = DefaultRadGridContextMenuCommands.SetDefaultCommand,
                     CommandParameter = AssociatedObject,
-
                 };
 
                 lst.Add(setDefault);
 
-
                 XamMenuItem clearSettings = new XamMenuItem
                 {
-                    /*  Tag = "Clear",*/
-                    Header = "Clear settings",
+                    Header = "Ripristina layout della griglia",
                     Command = DefaultRadGridContextMenuCommands.ClearSettingsCommand,
                     CommandParameter = AssociatedObject,
-
                 };
 
                 lst.Add(clearSettings);
@@ -195,31 +176,24 @@ namespace HighFreqUpdate.Behaviors
 
             XamMenuItem sortAscItem = new XamMenuItem
             {
-                /* Tag = "SortAscending",*/
                 Header = "Ordina A - Z per \"{0}\"",
-                Command = DefaultRadGridContextMenuCommands.SortAscendingCommand,
-
-
+                Command = DefaultRadGridContextMenuCommands.SortAscendingCommand
             };
 
             lst.Add(sortAscItem);
 
             XamMenuItem sortDescItem = new XamMenuItem
             {
-                /* Tag = "SortDescending",*/
                 Header = "Ordina Z - A per \"{0}\"",
-                Command = DefaultRadGridContextMenuCommands.SortDescendingCommand,
-
+                Command = DefaultRadGridContextMenuCommands.SortDescendingCommand
             };
 
             lst.Add(sortDescItem);
 
             XamMenuItem clearSortItem = new XamMenuItem
             {
-                /*Tag = "ClearSorting",*/
                 Header = "Cancella ordinamento per \"{0}\"",
-                Command = DefaultRadGridContextMenuCommands.SortClearingCommand,
-
+                Command = DefaultRadGridContextMenuCommands.SortClearingCommand
             };
 
             lst.Add(new XamMenuSeparator());
@@ -228,51 +202,46 @@ namespace HighFreqUpdate.Behaviors
 
             XamMenuItem groupItem = new XamMenuItem
             {
-                /* Tag = "Groupby",*/
                 Header = "Raggruppa per \"{0}\"",
-                Command = DefaultRadGridContextMenuCommands.GroupByCommand,
-
+                Command = DefaultRadGridContextMenuCommands.GroupByCommand
             };
-
 
             lst.Add(groupItem);
 
             XamMenuItem ungroupItem = new XamMenuItem
             {
-                /* Tag = "Ungroup",*/
-                Header = "Ungroup",
-                Command = DefaultRadGridContextMenuCommands.UnGroupByCommand,
-
+                Header = "Cancella reggruppamento per \"{0}\"",
+                Command = DefaultRadGridContextMenuCommands.UnGroupByCommand
             };
-
 
             lst.Add(ungroupItem);
 
             lst.Add(new XamMenuSeparator());
             XamMenuItem colVisibleItem = new XamMenuItem
             {
-                /* Tag = "colVisibleItem",*/
-                Header = "Visible columns",
-
+                Header = "Colonne visibili : "
             };
-
 
             lst.Add(colVisibleItem);
 
             XamDataGrid grid = AssociatedObject;
 
-            // create menu items
             foreach (Field column in grid.FieldLayouts[0].Fields)
             {
-                XamMenuItem subMenu = new XamMenuItem();
-                subMenu.Header = column.Name;
-                subMenu.IsCheckable = true;
-                subMenu.IsChecked = true;
-                subMenu.StaysOpenOnClick = true;
+                XamMenuItem subMenu = new XamMenuItem
+                {
+                    Header = column.Name,
+                    IsCheckable = true,
+                    IsChecked = true,
+                    StaysOpenOnClick = true
+                };
 
-                Binding isCheckedBinding = new Binding("IsVisible");
-                isCheckedBinding.Mode = BindingMode.TwoWay;
-                isCheckedBinding.Source = column;
+                Binding isCheckedBinding = new Binding("Visibility")
+                {
+                    Mode = BindingMode.TwoWay,
+                    Source = column,
+                    Converter = new VisibilityToBooleanConverter()
+                };
 
                 // bind IsChecked menu item property to IsVisible column property
                 subMenu.SetBinding(XamMenuItem.IsCheckedProperty, isCheckedBinding);
@@ -282,10 +251,8 @@ namespace HighFreqUpdate.Behaviors
             lst.Add(new XamMenuSeparator());
             XamMenuItem colDelFilterItem = new XamMenuItem
             {
-                /*   Tag = "DeleteFilters",*/
-                Header = "Delete filters",
-                Command = DefaultRadGridContextMenuCommands.DeleteFiltersCommand,
-
+                Header = "Elimina filtri",
+                Command = DefaultRadGridContextMenuCommands.DeleteFiltersCommand
             };
 
             lst.Add(colDelFilterItem);
@@ -294,18 +261,16 @@ namespace HighFreqUpdate.Behaviors
             {
                 var menuItem2 = new XamMenuItem
                 {
-                    Header = "Colore",
-                    Command = DefaultRadGridContextMenuCommands.ChangeColorCommand,
-
+                    Header = "Gestione colori",
+                    Command = DefaultRadGridContextMenuCommands.ChangeColorCommand
                 };
 
                 lst.Add(menuItem2);
 
                 var menuItem1 = new XamMenuItem
                 {
-                    Header = "Font",
-                    Command = DefaultRadGridContextMenuCommands.ChangeFontCommand,
-
+                    Header = "Gestione font",
+                    Command = DefaultRadGridContextMenuCommands.ChangeFontCommand
                 };
 
                 lst.Add(menuItem1);
@@ -314,18 +279,18 @@ namespace HighFreqUpdate.Behaviors
             return lst;
         }
 
-
         private IEnumerable<FrameworkElement> GetRowMenuItems(XamContextMenu contextMenu)
         {
             var rowItems = new List<FrameworkElement>();
 
             bool areThereSpecificContextItems = contextMenu.Items.Count > 0;
 
-            var menuItem = new XamMenuItem { Header = "Export" };
-
-            menuItem.Command = DefaultRadGridContextMenuCommands.ExportGridCommand;
-            menuItem.CommandParameter = AssociatedObject;
-
+            var menuItem = new XamMenuItem
+            {
+                Header = "Export",
+                Command = DefaultRadGridContextMenuCommands.ExportGridCommand,
+                CommandParameter = AssociatedObject
+            };
 
             rowItems.Add(menuItem);
 
