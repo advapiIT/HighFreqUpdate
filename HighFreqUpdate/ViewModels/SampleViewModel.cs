@@ -173,6 +173,10 @@ namespace HighFreqUpdate.ViewModels
                     var index = random.Next(-20, 20);
 
                     dummyItem.Id = Math.Abs(index);
+
+                    var cross = random.Next(1, 3);
+
+                    dummyItem.IdCross = cross;
                     //dummyItem.Value = index * DateTime.Now.Ticks;
 
                     queue.Enqueue(dummyItem);

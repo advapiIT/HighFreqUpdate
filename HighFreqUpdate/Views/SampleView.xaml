@@ -1,23 +1,40 @@
-﻿<catel:DataWindow
-    xmlns:catel="http://schemas.catelproject.com"
-    xmlns:igDP="http://infragistics.com/DataPresenter"
-    x:Class="HighFreqUpdate.Views.SampleView"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-    xmlns:ig="http://schemas.infragistics.com/xaml"
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-    xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
-    xmlns:converter="clr-namespace:HighFreqUpdate.Converters"
-    xmlns:behaviors="clr-namespace:HighFreqUpdate.Behaviors"
-    SizeToContent="Manual"
-      ResizeMode="CanResizeWithGrip" Width="1024"
-    mc:Ignorable="d" 
-      Title="SampleView">
+﻿<catel:DataWindow xmlns:catel="http://schemas.catelproject.com"
+                  xmlns:igDP="http://infragistics.com/DataPresenter"
+                  xmlns:igED="http://infragistics.com/Editors"
+                  x:Class="HighFreqUpdate.Views.SampleView"
+                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                  xmlns:ig="http://schemas.infragistics.com/xaml"
+                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                  xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+                  xmlns:converter="clr-namespace:HighFreqUpdate.Converters"
+                  xmlns:behaviors="clr-namespace:HighFreqUpdate.Behaviors"
+                  xmlns:selector="clr-namespace:HighFreqUpdate.Selector"
+                  SizeToContent="Manual"
+                  ResizeMode="CanResizeWithGrip" Width="1024"
+                  mc:Ignorable="d" 
+                  Title="SampleView">
+
+    <catel:DataWindow.Resources>
+        <selector:DecimalFormatTemplateSelectorNew x:Key="TemplateSelector"/>
+
+        <DataTemplate x:Key="ctvFormatDecimal2Qta1">
+            <TextBlock Text="{igED:TemplateEditorValueBinding StringFormat='{}{0:N2}'}" HorizontalAlignment="Right" />
+        </DataTemplate>
+
+        <DataTemplate x:Key="ctvFormatDecimal4Qta1">
+            <TextBlock Text="{igED:TemplateEditorValueBinding StringFormat='{}{0:N4}'}" HorizontalAlignment="Right" />
+        </DataTemplate>
+
+        <DataTemplate x:Key="IsCounterpartSkipSettlementTemplate">
+            <CheckBox IsChecked="{igED:TemplateEditorValueBinding}" IsEnabled="False" HorizontalAlignment="Center"/>
+        </DataTemplate>
+    </catel:DataWindow.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="30"/>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
 
@@ -25,9 +42,15 @@
             <Button Content="Save" Command="{Binding SaveLayoutCommand}" CommandParameter="{Binding ElementName=dataGrid}"/>
             <Button Content="Load" Margin="5,0,0,0" Command="{Binding LoadLayoutCommand}" CommandParameter="{Binding ElementName=dataGrid}"/>
         </StackPanel>
-        <igDP:XamDataGrid x:Name="dataGrid" DataSource="{Binding DataItems}" Height="600" Grid.Row="1" 
-                          Theme="IGTheme" 
-                          GroupByAreaLocation="AboveDataArea" IsGroupByAreaExpanded="True">
+        <igDP:XamDataGrid x:Name="dataGrid" DataSource="{Binding DataItems}" Height="600" Grid.Row="1" Theme="IGTheme" GroupByAreaLocation="AboveDataArea" IsGroupByAreaExpanded="True">
+
+            <igDP:XamDataGrid.FieldSettings>
+                <igDP:FieldSettings AllowEdit="false" AllowGroupBy="True" AllowRecordFiltering="True" SummaryDisplayArea="BottomFixed" GroupByMode="Default" />
+            </igDP:XamDataGrid.FieldSettings>
+
+            <igDP:XamDataGrid.FieldLayoutSettings>
+                <igDP:FieldLayoutSettings AutoGenerateFields="False" AllowClipboardOperations="Copy" HeaderPlacement="OnTopOnly" HeaderPlacementInGroupBy="OnTopOnly"/>
+            </igDP:XamDataGrid.FieldLayoutSettings>
 
             <i:Interaction.Behaviors>
                 <behaviors:ContextMenuDefaultOperationBehavior ShowManageSettings="True" />
@@ -43,10 +66,7 @@
                 </ig:ContextMenuManager>
             </ig:ContextMenuService.Manager>
 
-
-
             <igDP:XamDataGrid.Resources>
-
                 <Storyboard x:Key="storyboard" Completed="Storyboard_OnCompleted" AutoReverse="True" >
                     <ColorAnimation
                         Storyboard.TargetProperty="Background.Color" 
@@ -65,6 +85,7 @@
                         </Setter.Value>
                     </Setter>
                 </Style>
+
                 <Style TargetType="{x:Type igDP:DataRecordCellArea}">
                     <Setter Property="BackgroundHover" Value="Gainsboro"/>
                     <Setter Property="BackgroundSelected" Value="Transparent"/>
@@ -84,156 +105,59 @@
                     </Style.Triggers>-->
                 </Style>
             </igDP:XamDataGrid.Resources>
-            <igDP:XamDataGrid.FieldSettings>
-                <igDP:FieldSettings AllowEdit="false" AllowGroupBy="True" AllowRecordFiltering="True" SummaryDisplayArea="BottomFixed" GroupByMode="Default" />
-            </igDP:XamDataGrid.FieldSettings>
-
-            <igDP:XamDataGrid.FieldLayoutSettings>
-                <igDP:FieldLayoutSettings AutoGenerateFields="False" AllowClipboardOperations="Copy"/>
-
-            </igDP:XamDataGrid.FieldLayoutSettings>
+            
             <igDP:XamDataGrid.FieldLayouts>
                 <igDP:FieldLayout>
                     <igDP:FieldLayout.SummaryDefinitions>
-                        <igDP:SummaryDefinition Key="idp_count"
-                                                SourceFieldName="Id"
-                                                Calculator="Count"  />
+                        <igDP:SummaryDefinition Key="idp_count" SourceFieldName="Id" Calculator="Count"  />
                     </igDP:FieldLayout.SummaryDefinitions>
-                    <igDP:Field Name="Id">
-
-                    </igDP:Field>
-                    <igDP:Field Name="Trader"/>
-                    <igDP:Field Name="Portfolio"/>
-                    <igDP:Field Name="InstrumentCross" HorizontalContentAlignment="Center"/>
-                    <igDP:Field Name="InstrumentCurrency1Description" HorizontalContentAlignment="Center"/>
-                    <igDP:Field Name="InstrumentCurrency2Description" HorizontalContentAlignment="Center"/>
-                    <igDP:Field Name="Data" HorizontalContentAlignment="Center" Format="dd/MM/yyyy"/>
-                    <igDP:Field Name="Ora" HorizontalContentAlignment="Center" Format="HH:mm:ss"/>
-                    <igDP:Field Name="ValutaSpot" HorizontalContentAlignment="Center" Format="dd/MM/yyyy"/>
-                    <igDP:Field Name="Sign"/>
-                    <igDP:Field Name="QtaDiv1" />
-                    <igDP:Field Name="Cambio"/>
-                    <igDP:Field Name="QtaDiv2"/>
-                    <igDP:Field Name="IdCtp"/>
-                    <igDP:Field Name="CounterpartCode"/>
-                    <igDP:Field Name="Counterpart"/>
-                    <igDP:Field Name="AliasSwift"/>
-                    <igDP:Field Name="AliasAbi"/>
-                    <igDP:Field Name="AliasCed"/>
-                    <igDP:Field Name="SplitDescription"/>
-                    <igDP:Field Name="SplitFx"/>
-                    <igDP:Field Name="Status">
-                        <!--<igDP:Field.Settings>
-                            <igDP:FieldSettings>
-                                <igDP:FieldSettings.CellValuePresenterStyle>
-                                    <Style TargetType="{x:Type igDP:CellValuePresenter}">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Path=DataItem.IdStatus}" Value="1">
-                                                <Setter Property="Background" Value="Orange" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                        </Style>
-                                    </igDP:FieldSettings.CellValuePresenterStyle>
-                                </igDP:FieldSettings>
-                            </igDP:Field.Settings>-->
-                    </igDP:Field>
-                    <igDP:Field Name="Provenance"/>
-                    <igDP:Field Name="SettlementInstructions_ID_Tesoriera_IN_OUR_Leg0"/>
-                    <igDP:Field Name="SettlementInstructions_Tesoriera_IN_OUR_Leg0"/>
-                    <igDP:Field Name="SettlementInstructions_Tesoriera_IN_OUR_Leg0_Description"/>
-                    <igDP:Field Name="SettlementInstructions_Tesoriera_IN_OUR_Leg0_SWIFT"/>
-                    <igDP:Field Name="SettlementInstructions_Tesoriera_IBAN_IN_OUR_Leg0"/>
-                    <igDP:Field Name="SettlementInstructions_ID_Tesoriera_OUT_OUR_Leg0"/>
-                    <igDP:Field Name="SettlementInstructions_Tesoriera_OUT_OUR_Leg0"/>
-                    <igDP:Field Name="SettlementInstructions_Tesoriera_OUT_OUR_Leg0_Description"/>
-                    <igDP:Field Name="SettlementInstructions_Tesoriera_OUT_OUR_Leg0_SWIFT"/>
-                    <igDP:Field Name="SettlementInstructions_Tesoriera_IBAN_OUT_OUR_Leg0"/>
-                    <igDP:Field Name="SettlementInstructions_ID_Tesoriera_OUT_THEIR_Leg0"/>
-                    <igDP:Field Name="SettlementInstructions_Tesoriera_OUT_THEIR_Leg0"/>
-                    <igDP:Field Name="SettlementInstructions_Tesoriera_OUT_THEIR_Leg0_Description"/>
-                    <igDP:Field Name="SettlementInstructions_Tesoriera_OUT_THEIR_Leg0_SWIFT"/>
-                    <igDP:Field Name="SettlementInstructions_Tesoriera_IBAN_OUT_THEIR_Leg0"/>
-                    <igDP:Field Name="CurInSettlInfo"/>
-                    <igDP:Field Name="CurOutSettlInfo"/>
-                    <igDP:Field Name="Notes"/>
-                    <igDP:Field Name="InsertDate"/>
-                    <igDP:Field Name="ModifyDate"/>
+                    <igDP:Field Name="Id" Label="ID" Width="Auto"/>
+                    <igDP:Field Name="Trader" Label="Trader" Width="Auto"/>
+                    <igDP:Field Name="Portfolio" Label="Portafoglio" Width="Auto"/>
+                    <igDP:Field Name="InstrumentCross" Label="Coppia divise" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="Auto"/>
+                    <igDP:Field Name="InstrumentCurrency1Description" Label="Divisa 1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="Auto"/>
+                    <igDP:Field Name="InstrumentCurrency2Description" Label="Divisa 2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="Auto"/>
+                    <igDP:Field Name="Data" Label="Data" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Format="dd/MM/yyyy" Width="Auto"/>
+                    <igDP:Field Name="Ora" Label="Ora" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Format="HH:mm:ss" Width="Auto"/>
+                    <igDP:Field Name="ValutaSpot" Label="Valuta spot" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Format="dd/MM/yyyy" Width="Auto"/>
+                    <igDP:Field Name="Sign" Label="Segno" Width="Auto"/>
+                    <igDP:TemplateField Name="QtaDiv1" Label="Quantità 1" DisplayTemplateSelector="{StaticResource TemplateSelector}"/>
+                    <!--<igDP:Field Name="QtaDiv1" Label="Quantità 1" Width="Auto" HorizontalContentAlignment="Right" Di CellTemplateSelector="{StaticResource TemplateSelector}"/>-->
+                    <igDP:Field Name="Cambio" Label="Cambio" Width="Auto" HorizontalContentAlignment="Right" />
+                    <igDP:Field Name="QtaDiv2" Label="Quantità 2" Width="Auto" HorizontalContentAlignment="Right"/>
+                    <igDP:Field Name="IdCtp" Label="Id controparte" Width="Auto" HorizontalContentAlignment="Right"/>
+                    <igDP:Field Name="CounterpartCode" Label="Codice controparte" Width="Auto"/>
+                    <igDP:Field Name="Counterpart" Label="Controparte" Width="Auto"/>
+                    <igDP:TemplateField Name="IsCounterpartSkipSettlement" Label="Non contabilizzare" DisplayTemplate="{StaticResource IsCounterpartSkipSettlementTemplate}" Width="Auto"/>
+                    <igDP:Field Name="AliasSwift" Label="SWIFT" Width="Auto"/>
+                    <igDP:Field Name="AliasAbi" Label="ABI" Width="Auto"/>
+                    <igDP:Field Name="AliasCed" Label="CED" Width="Auto"/>
+                    <igDP:Field Name="SplitDescription" Label="Divisa di split" Width="Auto"/>
+                    <igDP:Field Name="SplitFx" Label="Cambio di split" Width="Auto" HorizontalContentAlignment="Right"/>
+                    <igDP:Field Name="Status" Label="Stato" Width="Auto"/>
+                    <igDP:Field Name="Provenance" Label="Provenienza" Width="Auto"/>
+                    <igDP:Field Name="SettlementInstructions_ID_Tesoriera_IN_OUR_Leg0" Label="Tesoriera In Id" Width="Auto"/>
+                    <igDP:Field Name="SettlementInstructions_Tesoriera_IN_OUR_Leg0" Label="Tesoriera In Codice" Width="Auto"/>
+                    <igDP:Field Name="SettlementInstructions_Tesoriera_IN_OUR_Leg0_Description" Label="Tesoriera In Descrizione" Width="Auto"/>
+                    <igDP:Field Name="SettlementInstructions_Tesoriera_IN_OUR_Leg0_SWIFT" Label="Tesoriera In SWIFT" Width="Auto"/>
+                    <igDP:Field Name="SettlementInstructions_Tesoriera_IBAN_IN_OUR_Leg0" Label="Tesoreria In Iban" Width="Auto"/>
+                    <igDP:Field Name="SettlementInstructions_ID_Tesoriera_OUT_OUR_Leg0" Label="Tesoriera Out Our Id" Width="Auto"/>
+                    <igDP:Field Name="SettlementInstructions_Tesoriera_OUT_OUR_Leg0" Label="Tesoriera Out Our Codice" Width="Auto"/>
+                    <igDP:Field Name="SettlementInstructions_Tesoriera_OUT_OUR_Leg0_Description" Label="Tesoriera Out Our Descrizione" Width="Auto"/>
+                    <igDP:Field Name="SettlementInstructions_Tesoriera_OUT_OUR_Leg0_SWIFT" Label="Tesoriera Out Our SWIFT" Width="Auto"/>
+                    <igDP:Field Name="SettlementInstructions_Tesoriera_IBAN_OUT_OUR_Leg0" Label="Tesoreria Out Our Iban" Width="Auto"/>
+                    <igDP:Field Name="SettlementInstructions_ID_Tesoriera_OUT_THEIR_Leg0" Label="Tesoriera Out Their Id" Width="Auto"/>
+                    <igDP:Field Name="SettlementInstructions_Tesoriera_OUT_THEIR_Leg0" Label="Tesoriera Out Their Codice" Width="Auto"/>
+                    <igDP:Field Name="SettlementInstructions_Tesoriera_OUT_THEIR_Leg0_Description" Label="Tesoriera Out Their Descrizione" Width="Auto"/>
+                    <igDP:Field Name="SettlementInstructions_Tesoriera_OUT_THEIR_Leg0_SWIFT" Label="Tesoriera Out Their SWIFT" Width="Auto"/>
+                    <igDP:Field Name="SettlementInstructions_Tesoriera_IBAN_OUT_THEIR_Leg0" Label="Tesoreria Out Their Iban" Width="Auto"/>
+                    <igDP:Field Name="CurInSettlInfo" Label="In settlement info" Width="Auto"/>
+                    <igDP:Field Name="CurOutSettlInfo" Label="Out settlement info" Width="Auto"/>
+                    <igDP:Field Name="Notes" Label="Note" Width="Auto"/>
+                    <igDP:Field Name="InsertDate" Label="Data inserimento" Width="Auto" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Format="dd/MM/yyyy HH:mm:ss"/>
+                    <igDP:Field Name="ModifyDate" Label="Ultima modifica" Width="Auto" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Format="dd/MM/yyyy HH:mm:ss"/>
                 </igDP:FieldLayout>
             </igDP:XamDataGrid.FieldLayouts>
         </igDP:XamDataGrid>
     </Grid>
-
-
-    <!--<telerik:GridViewDataColumn Header="{x:Static resources:DealResources.ISTITUTO}" DataMemberBinding="{Binding Institute}" UniqueName="Institute" >
-        <telerik:GridViewDataColumn.AggregateFunctions>
-            <telerik:CountFunction Caption="Totale:" />
-        </telerik:GridViewDataColumn.AggregateFunctions>
-    </telerik:GridViewDataColumn>
-
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.ID}" DataMemberBinding="{Binding Id}" UniqueName="Id"/>
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.USER}" DataMemberBinding="{Binding Trader}" UniqueName="Trader"/>
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.PORTFOLIO}" DataMemberBinding ="{Binding Portfolio}" 
-                                                UniqueName="Portfolio"/>
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.COPPIA_DIVISE}" DataMemberBinding ="{Binding InstrumentCross}"  
-                                                UniqueName="Cross" TextAlignment="Center"/>
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.CURRENCY1}" DataMemberBinding ="{Binding InstrumentCurrency1Description}" 
-                                                UniqueName="Currency1" TextAlignment="Center"/>
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.CURRENCY2}" DataMemberBinding ="{Binding InstrumentCurrency2Description}" 
-                                                UniqueName="Currency2" TextAlignment="Center"/>
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.DATA}" DataMemberBinding="{Binding Data}" DataFormatString="dd/MM/yyyy" 
-                                                TextAlignment="Center" UniqueName="Data"/>
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.ORA}" DataMemberBinding="{Binding Ora}" DataFormatString="HH:mm:ss" 
-                                                TextAlignment="Center" UniqueName="Ora"/>
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.VALUTA_SPOT}" DataMemberBinding="{Binding ValutaSpot}" 
-                                                DataFormatString="dd/MM/yyyy" TextAlignment="Center" UniqueName="ValutaSpot"/>
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.SEGNO}" DataMemberBinding ="{Binding Sign}"  UniqueName="Sign"/>
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.QTADIV1}" DataMemberBinding="{Binding QtaDiv1}" DataFormatString="" CellTemplateSelector="{StaticResource New}" 
-                                                TextAlignment="Right" UniqueName="QtaDiv1"/>
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.CAMBIO}" DataMemberBinding="{Binding Cambio}" TextAlignment="Right" CellTemplateSelector="{StaticResource New}"
-                                                UniqueName="Cambio"/>
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.QTADIV2}" DataMemberBinding="{Binding QtaDiv2}" CellTemplateSelector="{StaticResource New}"
-                                                TextAlignment="Right" UniqueName="QtaDiv2"/>
-
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.CTP_ID}" DataMemberBinding ="{Binding IdCtp}"  UniqueName="IdCtp" TextAlignment="Right"/>
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.CTP_CODE}" DataMemberBinding ="{Binding CounterpartCode}"  UniqueName="CounterpartCode"/>
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.CTP_DESC}" DataMemberBinding ="{Binding Counterpart}"  UniqueName="Counterpart"/>
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.LBL_CTP_SKIP_SETTLEMENT}" UniqueName="IsCounterpartSkipSettlement" CellTemplate="{StaticResource IsCounterpartSkipSettlementTemplate}"/>
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.ALIAS_SWIFT}" DataMemberBinding ="{Binding AliasSwift}"  UniqueName="AliasSwift"/>
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.ALIAS_ABI}" DataMemberBinding ="{Binding AliasAbi}"  UniqueName="AliasAbi"/>
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.ALIAS_CED}" DataMemberBinding ="{Binding AliasCed}"  UniqueName="AliasCed"/>
-
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.SPLIT_CURRENCY}" DataMemberBinding ="{Binding SplitDescription}" 
-                                                UniqueName="SplitCurrency" TextAlignment="Center"/>
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.FX}" DataMemberBinding="{Binding SplitFx}" TextAlignment="Right"
-                                                UniqueName="SplitFx" CellTemplateSelector="{StaticResource New}"/>
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.STATO}" DataMemberBinding ="{Binding Status}"  UniqueName="Status"/>
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.PROVENIENZA}" DataMemberBinding ="{Binding Provenance}"
-                                                UniqueName="Provenance"/>
-
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.TESORERIA_IN_ID}" DataMemberBinding ="{Binding SettlementInstructions_ID_Tesoriera_IN_OUR_Leg0}" UniqueName="SettlementInstructions_ID_Tesoriera_IN_OUR_Leg0" TextAlignment="Right"/>
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.TESORERIA_IN_CODE}" DataMemberBinding ="{Binding SettlementInstructions_Tesoriera_IN_OUR_Leg0}"  UniqueName="SettlementInstructions_Tesoriera_IN_OUR_Leg0"/>
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.TESORERIA_IN_DESCRIPTION}" DataMemberBinding ="{Binding SettlementInstructions_Tesoriera_IN_OUR_Leg0_Description}" UniqueName="SettlementInstructions_Tesoriera_IN_OUR_Leg0_Description"/>
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.TESORERIA_IN_SWIFT}" DataMemberBinding ="{Binding SettlementInstructions_Tesoriera_IN_OUR_Leg0_SWIFT}" UniqueName="SettlementInstructions_Tesoriera_IN_OUR_Leg0_SWIFT"/>
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.TESORERIA_IN_IBAN}" DataMemberBinding ="{Binding SettlementInstructions_Tesoriera_IBAN_IN_OUR_Leg0}" UniqueName="SettlementInstructions_Tesoriera_IBAN_IN_OUR_Leg0"/>
-
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.TESORERIA_OUT_OUR_ID}" DataMemberBinding ="{Binding SettlementInstructions_ID_Tesoriera_OUT_OUR_Leg0}" UniqueName="SettlementInstructions_ID_Tesoriera_OUT_OUR_Leg0" TextAlignment="Right"/>
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.TESORERIA_OUT_OUR_CODE}" DataMemberBinding ="{Binding SettlementInstructions_Tesoriera_OUT_OUR_Leg0}" UniqueName="SettlementInstructions_Tesoriera_OUT_OUR_Leg0"/>
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.TESORERIA_OUT_OUR_DESCRIPTION}" DataMemberBinding ="{Binding SettlementInstructions_Tesoriera_OUT_OUR_Leg0_Description}" UniqueName="SettlementInstructions_Tesoriera_OUT_OUR_Leg0_Description"/>
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.TESORERIA_OUT_OUR_SWIFT}" DataMemberBinding ="{Binding SettlementInstructions_Tesoriera_OUT_OUR_Leg0_SWIFT}" UniqueName="SettlementInstructions_Tesoriera_OUT_OUR_Leg0_SWIFT"/>
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.TESORERIA_OUT_OUR_IBAN}" DataMemberBinding ="{Binding SettlementInstructions_Tesoriera_IBAN_OUT_OUR_Leg0}" UniqueName="SettlementInstructions_Tesoriera_IBAN_OUT_OUR_Leg0"/>
-
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.TESORERIA_OUT_THEIR_ID}" DataMemberBinding ="{Binding SettlementInstructions_ID_Tesoriera_OUT_THEIR_Leg0}" UniqueName="SettlementInstructions_ID_Tesoriera_OUT_THEIR_Leg0" TextAlignment="Right"/>
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.TESORERIA_OUT_THEIR_CODE}" DataMemberBinding ="{Binding SettlementInstructions_Tesoriera_OUT_THEIR_Leg0}" UniqueName="SettlementInstructions_Tesoriera_OUT_THEIR_Leg0"/>
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.TESORERIA_OUT_THEIR_DESCRIPTION}" DataMemberBinding ="{Binding SettlementInstructions_Tesoriera_OUT_THEIR_Leg0_Description}" UniqueName="SettlementInstructions_Tesoriera_OUT_THEIR_Leg0_Description"/>
-
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.TESORERIA_OUT_THEIR_SWIFT}" DataMemberBinding ="{Binding SettlementInstructions_Tesoriera_OUT_THEIR_Leg0_SWIFT}" UniqueName="SettlementInstructions_Tesoriera_OUT_THEIR_Leg0_SWIFT"/>
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.TESORERIA_OUT_THEIR_IBAN}" DataMemberBinding ="{Binding SettlementInstructions_Tesoriera_IBAN_OUT_THEIR_Leg0}" UniqueName="SettlementInstructions_Tesoriera_IBAN_OUT_THEIR_Leg0"/>
-
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.CUR_IN_SETT_INFO}" DataMemberBinding ="{Binding CurInSettlInfo}" UniqueName="CurInSettlInfo"/>
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.CUR_OUT_SETT_INFO}" DataMemberBinding ="{Binding CurOutSettlInfo}" UniqueName="CurOutSettlInfo"/>
-
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.NOTE}" DataMemberBinding ="{Binding Notes}"  UniqueName="Notes"/>
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.DATA_INSERIMENTO}" DataMemberBinding="{Binding InsertDate}" DataFormatString="dd/MM/yyyy HH:mm:ss" TextAlignment="Center" UniqueName="InsertDate"/>
-    <telerik:GridViewDataColumn Header="{x:Static resources:DealResources.DATA_MODIFICA}" DataMemberBinding="{Binding ModifyDate}" DataFormatString="dd/MM/yyyy HH:mm:ss" TextAlignment="Center" UniqueName="ModifyDate"/>
-    <telerik:GridViewColumn UniqueName="ToffButton" Header="{x:Static resources:DealResources.LBL_TOF}" CellTemplate="{StaticResource ToffTemplate}">-->
 </catel:DataWindow>
