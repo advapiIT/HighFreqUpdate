@@ -42,7 +42,7 @@
             <Button Content="Save" Command="{Binding SaveLayoutCommand}" CommandParameter="{Binding ElementName=dataGrid}"/>
             <Button Content="Load" Margin="5,0,0,0" Command="{Binding LoadLayoutCommand}" CommandParameter="{Binding ElementName=dataGrid}"/>
         </StackPanel>
-        <igDP:XamDataGrid x:Name="dataGrid" DataSource="{Binding DataItems}" Height="600" Grid.Row="1" Theme="IGTheme" GroupByAreaLocation="AboveDataArea" IsGroupByAreaExpanded="True">
+        <igDP:XamDataGrid x:Name="dataGrid" DataSource="{Binding DataItems}" Height="600" Grid.Row="1" Theme="IGTheme" GroupByAreaLocation="AboveDataArea" IsGroupByAreaExpanded="True" FontSize="50">
 
             <igDP:XamDataGrid.FieldSettings>
                 <igDP:FieldSettings AllowEdit="false" AllowGroupBy="True" AllowRecordFiltering="True" SummaryDisplayArea="BottomFixed" GroupByMode="Default" />
@@ -95,14 +95,6 @@
                             <SolidColorBrush Color="Transparent" />
                         </Setter.Value>
                     </Setter>
-                    <!--<Style.Triggers>
-                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Record.DataItem.IsChanged}" Value="True">
-                            <DataTrigger.EnterActions>
-                                <BeginStoryboard Storyboard="{StaticResource storyboard}"></BeginStoryboard>
-                             
-                            </DataTrigger.EnterActions>
-                        </DataTrigger>
-                    </Style.Triggers>-->
                 </Style>
             </igDP:XamDataGrid.Resources>
             
