@@ -137,6 +137,7 @@
     <Compile Include="Models\ManageColorModel.cs" />
     <Compile Include="Models\ManageFontModel.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Selector\DecimalFormatTemplateSelectorNew.cs" />
     <Compile Include="ViewModels\Popups\ManageColorViewModel.cs" />
     <Compile Include="ViewModels\Popups\ManageFontViewModel.cs" />
     <Compile Include="Views\Popups\ManageColorView.xaml.cs">
