@@ -42,6 +42,7 @@
             <Button Content="Save" Command="{Binding SaveLayoutCommand}" CommandParameter="{Binding ElementName=dataGrid}"/>
             <Button Content="Load" Margin="5,0,0,0" Command="{Binding LoadLayoutCommand}" CommandParameter="{Binding ElementName=dataGrid}"/>
         </StackPanel>
+
         <igDP:XamDataGrid x:Name="dataGrid" DataSource="{Binding DataItems}" Height="600" Grid.Row="1" Theme="IGTheme" GroupByAreaLocation="AboveDataArea" IsGroupByAreaExpanded="True">
 
             <igDP:XamDataGrid.FieldSettings>
@@ -95,23 +96,15 @@
                             <SolidColorBrush Color="Transparent" />
                         </Setter.Value>
                     </Setter>
-                    <!--<Style.Triggers>
-                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Record.DataItem.IsChanged}" Value="True">
-                            <DataTrigger.EnterActions>
-                                <BeginStoryboard Storyboard="{StaticResource storyboard}"></BeginStoryboard>
-                             
-                            </DataTrigger.EnterActions>
-                        </DataTrigger>
-                    </Style.Triggers>-->
                 </Style>
             </igDP:XamDataGrid.Resources>
-            
+
             <igDP:XamDataGrid.FieldLayouts>
                 <igDP:FieldLayout>
                     <igDP:FieldLayout.SummaryDefinitions>
-                        <igDP:SummaryDefinition Key="idp_count" SourceFieldName="Id" Calculator="Count"  />
+                        <igDP:SummaryDefinition SourceFieldName="Id" Calculator="Count" StringFormat="Totale : {0}"/>
                     </igDP:FieldLayout.SummaryDefinitions>
-                    <igDP:Field Name="Id" Label="ID" Width="Auto"/>
+                    <igDP:Field Name="Id" Label="ID" Width="Auto" Format="N0" HorizontalContentAlignment="Right"/>
                     <igDP:Field Name="Trader" Label="Trader" Width="Auto"/>
                     <igDP:Field Name="Portfolio" Label="Portafoglio" Width="Auto"/>
                     <igDP:Field Name="InstrumentCross" Label="Coppia divise" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="Auto"/>
