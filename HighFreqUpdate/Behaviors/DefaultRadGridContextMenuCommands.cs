@@ -344,6 +344,128 @@ namespace HighFreqUpdate.Behaviors
                 //ServiceLocator.Default.ResolveType<IExceptionService>().Process(() => throw new DefaultException(ex));
             }
         }
+
+        public static TaskCommand<HeaderCommandParameter> PropertiesCommand { get; }
+        private static Task OnPropertiesCommandExecute(HeaderCommandParameter parameter)
+        {
+            var managePropertiesModel = new ManagePropertiesModel();
+
+            managePropertiesModel.Grid = parameter.Grid;
+
+            managePropertiesModel.SelectedColumn = parameter.Column;// parameter.Grid.Selection != null ? parameter.Grid.Columns[parameter.ColumnClicked].Header : null;
+
+            var viewModel = ViewModelFactory.CreateViewModel<ManagePropertiesViewModel>(managePropertiesModel, null);
+
+            return UIVisualizerService.ShowAsync(viewModel, OnPropertiesCommandCompleted);
+        }
+
+        private static void OnPropertiesCommandCompleted(object sender, UICompletedEventArgs e)
+        {
+            if (!(e.DataContext is ManagePropertiesViewModel dataContext) || !dataContext.WinResult) return;
+            try
+            {
+                var grid = dataContext.Grid;
+                var columns = dataContext.Columns;
+
+                if (grid.FieldLayouts?.FirstOrDefault() != null)
+                {
+                    var fields = grid.FieldLayouts?.First().Fields;
+                    var summaryDefinition = grid.FieldLayouts?.First().SummaryDefinitions;
+
+                    foreach (Field field in fields)
+                    {
+                        var column = columns.FirstOrDefault(x => x.Name == field.Label.ToString());
+
+                        if (column != null)
+                        {
+                            if (column.Type == typeof(int?) || column.Type == typeof(double?) || column.Type == typeof(int) || column.Type == typeof(double))
+                            {
+                                if (column.EnableCheckThousandSeparator)
+                                {
+                                    field.Format = $"N{column.Decimals}";
+
+                                    if (!column.EnableThousandSeparator)
+                                        field.Format = $"F{column.Decimals}";
+                                }
+                                else
+                                {
+                                    field.Format = field.Format != null ? $"{field.Format.Substring(0, 1)}{column.Decimals}" : $"N{column.Decimals}";
+                                }
+
+                                if (column.EnableAggregator)
+                                {
+                                    SummaryCalculator aggr = column.Aggregator == 1 ? SummaryCalculator.Sum : (column.Aggregator == 2 ? SummaryCalculator.Count : (SummaryCalculator)null);
+
+                                    if (aggr != null)
+                                        summaryDefinition.Add(aggr, field.Name);
+                                }
+                                else
+                                {
+                                    if (summaryDefinition.FirstOrDefault(x => x.SourceFieldName == field.Name) != null)
+                                        summaryDefinition.Remove(summaryDefinition.First(x => x.SourceFieldName == field.Name));
+                                }
+
+                                //col.IsAggregableByDefault = column.EnableAggregator;
+                            }
+                            else if (column.Type == typeof(DateTime?) || column.Type == typeof(DateTime))
+                            {
+                                field.Format = dataContext.Formats.First(x => x.FormatId == column.Format).FormatName;
+                            }
+
+                            switch (column.Align)
+                            {
+                                case 0:
+                                    field.HorizontalContentAlignment = HorizontalAlignment.Left;
+                                    break;
+                                case 1:
+                                    field.HorizontalContentAlignment = HorizontalAlignment.Center;
+                                    break;
+                                case 2:
+                                    field.HorizontalContentAlignment = HorizontalAlignment.Right;
+                                    break;
+                            }
+
+                            //if (column.IsBlinking)
+                            //{
+                            //    col.IsBlinking = column.IsBlinking;
+                            //    col.BlinkColor = column.BlinkColor;
+                            //    col.BlinkFreq = column.BlinkingFrequency;
+                            //}
+                            //else
+                            //{
+                            //    col.IsBlinking = column.IsBlinking;
+                            //    col.BlinkColor = Colors.Transparent;
+                            //    col.BlinkFreq = 1;
+                            //}
+
+                            //if (column.IsForeColorNegativeEnabled)
+                            //{
+                            //    col.IsFontColorNegativeEnabled = column.IsForeColorNegativeEnabled;
+                            //    col.FontColorNegative = new SolidColorBrush(column.ForeColorNegative);
+                            //}
+                            //else
+                            //{
+                            //    col.IsFontColorNegativeEnabled = column.IsForeColorNegativeEnabled;
+                            //}
+
+                            field.FixedLocation = column.EnableFreezeColumn ? FixedFieldLocation.FixedToNearEdge : FixedFieldLocation.Scrollable;
+
+                            //col.AllowDragging = !column.EnableLockColumn;
+                        }
+                    }
+                }
+
+                grid.FieldSettings.CellHeight = GridRowSizeHelper.GetRowHeightFromFontSize(grid.FontSize);
+
+                //SetColumnTotal(grid);
+                //FlexGridTotalHelper.SetColumnTotal(grid);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+                //ServiceLocator.Default.ResolveType<IExceptionService>().Process(() => throw new DefaultException(ex));
+            }
+        }
         #endregion
         #endregion
 
@@ -375,6 +497,7 @@ namespace HighFreqUpdate.Behaviors
 
             ChangeColorCommand = new TaskCommand<HeaderCommandParameter>(OnChangeColorCommandExecute);
             ChangeFontCommand = new TaskCommand<HeaderCommandParameter>(OnChangeFontCommandExecute);
+            PropertiesCommand = new TaskCommand<HeaderCommandParameter>(OnPropertiesCommandExecute);
 
             //BaseStyle = Application.Current.FindResource("GridViewCellCoreStyle") as System.Windows.Style;
         }
