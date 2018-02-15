@@ -1,24 +1,17 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Threading;
 using Catel;
 using Catel.Collections;
-using Catel.IoC;
 using Catel.MVVM;
-using Catel.Runtime.Serialization.Xml;
 using Catel.Services;
 using FizzWare.NBuilder;
 using HighFreqUpdate.Models;
-using HighFreqUpdate.Services.Interfaces;
+using IF.WPF.Infragistics.Persistence;
 using Infragistics.Windows.DataPresenter;
 using ServiceStack;
 
@@ -26,15 +19,13 @@ namespace HighFreqUpdate.ViewModels
 {
     public class SampleViewModel : ViewModelBase
     {
-        private IGridPersistenceService gridPersistenceService;
+        private readonly IGridPersistenceService gridPersistenceService;
+        private readonly IDispatcherService dispatcherService;
+
 
         public FastObservableCollection<DealSpotVisual> DataItems { get; set; }
         private IDictionary<int, DealSpotVisual> mappingDummyItems { get; set; }
-
-        public TaskCommand<XamDataGrid> SaveLayoutCommand { get; private set; }
-        public TaskCommand<XamDataGrid> LoadLayoutCommand { get; private set; }
-
-        private IDispatcherService dispatcherService;
+       
         private object mappingDummyItemsLock = new object();
         private IDisposable IsGenerating()
         {
@@ -82,41 +73,21 @@ namespace HighFreqUpdate.ViewModels
 
         }
 
-        private Task OnLoadCommandExecute(XamDataGrid grid)
+        public TaskCommand<XamDataGrid> SaveLayoutCommand { get; private set; }
+        public TaskCommand<XamDataGrid> LoadLayoutCommand { get; private set; }
+
+        private async Task OnLoadCommandExecute(XamDataGrid grid)
         {
             timer.Stop();
             dispatcherTimer.Stop();
 
-            return gridPersistenceService.RestoreGrid(grid);
-       
+            await gridPersistenceService.RestoreGrid(grid);
+
+            timer.Start();
+            dispatcherTimer.Start();
+
         }
 
-        private void LoadCustomGridSettings(XamDataGrid grid, GridCustomizations gridCustomizations)
-        {
-            foreach (var gridCustomization in gridCustomizations.ColumnsStyle.Where(x => x.Value.HasData))
-            {
-                string columnName = gridCustomization.Key;
-
-                var column = grid.FieldLayouts[0].Fields.FirstOrDefault(x => x.Name == columnName);
-
-                var style = new Style(typeof(CellValuePresenter));
-
-                if (!string.IsNullOrEmpty(gridCustomization.Value.ForeColor))
-                {
-                    style.Setters.Add(new Setter(Control.ForegroundProperty,
-                        new SolidColorBrush((Color)ColorConverter.ConvertFromString(gridCustomization.Value.ForeColor))));
-                }
-
-                if (!string.IsNullOrEmpty(gridCustomization.Value.BackGroundColor))
-                {
-                    style.Setters.Add(new Setter(Control.BackgroundProperty,
-                        new SolidColorBrush((Color)ColorConverter.ConvertFromString(gridCustomization.Value.BackGroundColor))));
-                }
-
-                column.CellValuePresenterStyle = style;
-
-            }
-        }
 
         private async Task OnSaveCommandExecute(XamDataGrid grid)
         {
@@ -183,7 +154,6 @@ namespace HighFreqUpdate.ViewModels
                     var cross = random.Next(1, 3);
 
                     dummyItem.IdCross = cross;
-                    //dummyItem.Value = index * DateTime.Now.Ticks;
 
                     queue.Enqueue(dummyItem);
                 }

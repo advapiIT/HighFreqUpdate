@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace HighFreqUpdate
+namespace IF.WPF.Infragistics.Persistence
 {
     [DataContract]
     public class GridCustomizations

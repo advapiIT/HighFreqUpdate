@@ -51,7 +51,6 @@
     <Reference Include="InfragisticsWPF4.Controls.Menus.XamMenu.v17.2, Version=17.2.20172.2029, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb, processorArchitecture=MSIL" />
     <Reference Include="InfragisticsWPF4.DataPresenter.v17.2, Version=17.2.20172.2029, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb, processorArchitecture=MSIL" />
     <Reference Include="InfragisticsWPF4.Editors.v17.2, Version=17.2.20172.2029, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb, processorArchitecture=MSIL" />
-    <Reference Include="InfragisticsWPF4.Persistence.v17.2, Version=17.2.20172.2029, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb, processorArchitecture=MSIL" />
     <Reference Include="InfragisticsWPF4.v17.2, Version=17.2.20172.2029, Culture=neutral, PublicKeyToken=7dd5c3163f2cd0cb, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Expression.Interactions, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Expression.Blend.Sdk.WPF.1.0.1\lib\net45\Microsoft.Expression.Interactions.dll</HintPath>
@@ -124,12 +123,10 @@
     <Compile Include="Behaviors\ContextMenuDefaultOperationBehavior.cs" />
     <Compile Include="Behaviors\DefaultRadGridContextMenuCommands.cs" />
     <Compile Include="Behaviors\ScrollIntoViewBehavior.cs" />
-    <Compile Include="Constants.cs" />
     <Compile Include="Converters\IsNotNullToBoolean.cs" />
     <Compile Include="Converters\StatusRowColorStyleSelectorBase.cs" />
     <Compile Include="Enums\StatusTypeEnum.cs" />
     <Compile Include="Extensions\Extensions.cs" />
-    <Compile Include="GridCustomizations.cs" />
     <Compile Include="Helpers\ContextMenuHelper.cs" />
     <Compile Include="Helpers\GridCustomizationHelpers.cs" />
     <Compile Include="Helpers\GridRowSizeHelper.cs" />
@@ -141,8 +138,6 @@
     <Compile Include="Models\ManageFontModel.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Selector\DecimalFormatTemplateSelectorNew.cs" />
-    <Compile Include="Services\GridPersistenceService.cs" />
-    <Compile Include="Services\Interfaces\IGridPersistenceService.cs" />
     <Compile Include="ViewModels\Popups\ManageColorViewModel.cs" />
     <Compile Include="ViewModels\Popups\ManageFontViewModel.cs" />
     <Compile Include="Views\Popups\ManageColorView.xaml.cs">
@@ -199,17 +194,22 @@
     </None>
     <AppDesigner Include="Properties\" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\IF.WPF.Infragistics.Persistence\IF.WPF.Infragistics.Persistence.csproj">
+      <Project>{4a4bf683-d1e8-45d1-8736-3b2a9422e83f}</Project>
+      <Name>IF.WPF.Infragistics.Persistence</Name>
+    </ProjectReference>
+  </ItemGroup>
   <ItemGroup>
     <None Include="FodyWeavers.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\Fody.2.0.2\build\dotnet\Fody.targets" Condition="Exists('..\packages\Fody.2.0.2\build\dotnet\Fody.targets')" />
+  <Import Project="..\packages\Fody.2.4.1\build\Fody.targets" Condition="Exists('..\packages\Fody.2.4.1\build\Fody.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Fody.2.0.2\build\dotnet\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.2.0.2\build\dotnet\Fody.targets'))" />
+    <Error Condition="!Exists('..\packages\Fody.2.4.1\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.2.4.1\build\Fody.targets'))" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

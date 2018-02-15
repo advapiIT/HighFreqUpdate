@@ -2,7 +2,7 @@
 using Infragistics.Windows.DataPresenter;
 using System.Threading.Tasks;
 
-namespace HighFreqUpdate.Services.Interfaces
+namespace IF.WPF.Infragistics.Persistence
 {
     public interface IGridPersistenceService
     {
