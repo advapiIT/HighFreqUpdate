@@ -58,8 +58,6 @@ namespace HighFreqUpdate.ViewModels
 
         private const double dispatcherInterval = 250;
 
-        private const string File = "c:\\temp\\prova123.xml";
-
         public SampleViewModel(IDispatcherService dispatcherService,IGridPersistenceService persistenceService)
         {
             this.dispatcherService = dispatcherService;
@@ -70,7 +68,7 @@ namespace HighFreqUpdate.ViewModels
 
             dispatcherTimer.Interval = TimeSpan.FromMilliseconds(dispatcherInterval);
             dispatcherTimer.Tick += DispatcherTimer_Tick1;
-            timer = new Timer(5000);
+            timer = new Timer(1000);
             timer.Elapsed += Timer_Elapsed;
 
             timer.Start();
@@ -120,47 +118,18 @@ namespace HighFreqUpdate.ViewModels
             }
         }
 
-        private Task OnSaveCommandExecute(XamDataGrid grid)
+        private async Task OnSaveCommandExecute(XamDataGrid grid)
         {
             timer.Stop();
             dispatcherTimer.Stop();
 
-            return gridPersistenceService.PersistGrid(grid);
+            await gridPersistenceService.PersistGrid(grid);
+
+            timer.Start();
+            dispatcherTimer.Start();
         }
 
-        public static GridCustomizations GetGridExternalInformations(XamDataGrid grid)
-        {
-            var gridCustomizations = new GridCustomizations();
-
-            foreach (var field in grid.FieldLayouts[0].Fields)
-            {
-                //field.Name
-                if (field.CellValuePresenterStyle?.Setters?.Count > 0)
-                {
-                    ColumnSettings columnSettings = new ColumnSettings();
-
-                    foreach (Setter r in field.CellValuePresenterStyle.Setters)
-                    {
-                        if (r.Property.Name == Constants.ForegroundKey)
-                        {
-                            columnSettings.ForeColor = r.Value.ToString();
-                        }
-                        else if (r.Property.Name == Constants.BackgroundKey)
-                        {
-                            columnSettings.BackGroundColor = r.Value.ToString();
-                        }
-                    }
-
-                    if (columnSettings.HasData)
-                    {
-                        gridCustomizations.ColumnsStyle[field.Name] = columnSettings;
-                    }
-                }
-
-            }
-
-            return gridCustomizations;
-        }
+       
 
 
         private void DispatcherTimer_Tick1(object sender, EventArgs e)

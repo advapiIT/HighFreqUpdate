@@ -2,6 +2,8 @@
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using Catel;
 using Catel.Runtime.Serialization.Xml;
 using Catel.Services;
 using HighFreqUpdate.Services.Interfaces;
@@ -13,48 +15,48 @@ namespace HighFreqUpdate.Services
     {
         private IDispatcherService dispatcherService;
         private IXmlSerializer xmlSerializer;
+        private const string File = "c:\\temp\\prova123.xml";
 
         public GridPersistenceService(IDispatcherService dispatcherService,IXmlSerializer xmlSerializer)
         {
+            Argument.IsNotNull(()=> dispatcherService);
+            Argument.IsNotNull(()=> xmlSerializer);
+
             this.dispatcherService = dispatcherService;
             this.xmlSerializer = xmlSerializer;
         }
 
         public Task PersistGrid(XamDataGrid grid)
         {
-            //return dispatcherService.InvokeAsync(() =>
-            //{
-            //    using (MemoryStream memoryStream = new MemoryStream())
-            //    {
-            //        grid.SaveCustomizations(memoryStream);
+            return dispatcherService.InvokeAsync(() =>
+            {
+                    using (MemoryStream memoryStream = new MemoryStream())
+                    {
+                        grid.SaveCustomizations(memoryStream);
 
-            //        byte[] bytes = memoryStream.ToArray();
+                        byte[] bytes = memoryStream.ToArray();
 
-            //        var str = Encoding.UTF8.GetString(bytes);
+                        var str = Encoding.UTF8.GetString(bytes);
 
-            //        var externalInformations = GetGridExternalInformations(grid);
+                        var externalInformations = GetGridExternalInformations(grid);
 
-            //        IXmlSerializer x = ServiceLocator.Default.ResolveType<IXmlSerializer>();
 
-            //        using (var ms = new MemoryStream())
-            //        {
-            //            x.Serialize(externalInformations, ms);
 
-            //            byte[] bytes2 = ms.ToArray();
+                    //    using (var ms = new MemoryStream())
+                    //    {
+                    //        x.Serialize(externalInformations, ms);
 
-            //            var str1 = Encoding.UTF8.GetString(bytes2);
+                    //        byte[] bytes2 = ms.ToArray();
+                    //                var str1 = Encoding.UTF8.GetString(bytes2);
 
-            //            File.WriteAllText(GridCustomizations, str1);
-            //        }
+                    //    File.WriteAllText(File, str1);
+                    //}
 
-            //        File.WriteAllText(GridLayout, str);
+                    //File.WriteAllText(GridLayout, str);
 
-            //        timer.Start();
-            //        dispatcherTimer.Start();
-            //    }
-            //});
-
-            return null;
+                  
+                }
+            });
         }
 
         public Task RestoreGrid(XamDataGrid grid)
@@ -91,5 +93,39 @@ namespace HighFreqUpdate.Services
             //    }
             //});
         }
+
+public static GridCustomizations GetGridExternalInformations(XamDataGrid grid)
+{
+var gridCustomizations = new GridCustomizations();
+
+    foreach (var field in grid.FieldLayouts[0].Fields)
+{
+    //field.Name
+    if (field.CellValuePresenterStyle?.Setters?.Count > 0)
+    {
+        ColumnSettings columnSettings = new ColumnSettings();
+
+        foreach (Setter r in field.CellValuePresenterStyle.Setters)
+        {
+            if (r.Property.Name == Constants.ForegroundKey)
+            {
+                columnSettings.ForeColor = r.Value.ToString();
+            }
+            else if (r.Property.Name == Constants.BackgroundKey)
+            {
+                columnSettings.BackGroundColor = r.Value.ToString();
+            }
+        }
+
+        if (columnSettings.HasData)
+        {
+            gridCustomizations.ColumnsStyle[field.Name] = columnSettings;
+        }
     }
+
+}
+
+return gridCustomizations;
+}
+}
 }
