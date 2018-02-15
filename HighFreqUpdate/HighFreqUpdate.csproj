@@ -141,6 +141,8 @@
     <Compile Include="Models\ManageFontModel.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Selector\DecimalFormatTemplateSelectorNew.cs" />
+    <Compile Include="Services\GridPersistenceService.cs" />
+    <Compile Include="Services\Interfaces\IGridPersistenceService.cs" />
     <Compile Include="ViewModels\Popups\ManageColorViewModel.cs" />
     <Compile Include="ViewModels\Popups\ManageFontViewModel.cs" />
     <Compile Include="Views\Popups\ManageColorView.xaml.cs">
@@ -197,9 +199,7 @@
     </None>
     <AppDesigner Include="Properties\" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Services\Interfaces\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="FodyWeavers.xml" />
   </ItemGroup>

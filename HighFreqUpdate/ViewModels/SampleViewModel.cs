@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Threading;
 using Catel;
 using Catel.Collections;
@@ -16,6 +18,7 @@ using Catel.Runtime.Serialization.Xml;
 using Catel.Services;
 using FizzWare.NBuilder;
 using HighFreqUpdate.Models;
+using HighFreqUpdate.Services.Interfaces;
 using Infragistics.Windows.DataPresenter;
 using ServiceStack;
 
@@ -23,6 +26,8 @@ namespace HighFreqUpdate.ViewModels
 {
     public class SampleViewModel : ViewModelBase
     {
+        private IGridPersistenceService gridPersistenceService;
+
         public FastObservableCollection<DealSpotVisual> DataItems { get; set; }
         private IDictionary<int, DealSpotVisual> mappingDummyItems { get; set; }
 
@@ -52,12 +57,13 @@ namespace HighFreqUpdate.ViewModels
         private DispatcherTimer dispatcherTimer = new DispatcherTimer();
 
         private const double dispatcherInterval = 250;
-        private const string GridCustomizations = "c:\\temp\\xxx.xml";
-        private const string GridLayout = "c:\\temp\\prova123.xml";
 
-        public SampleViewModel(IDispatcherService dispatcherService)
+        private const string File = "c:\\temp\\prova123.xml";
+
+        public SampleViewModel(IDispatcherService dispatcherService,IGridPersistenceService persistenceService)
         {
             this.dispatcherService = dispatcherService;
+            this.gridPersistenceService = persistenceService;
 
             SaveLayoutCommand = new TaskCommand<XamDataGrid>(OnSaveCommandExecute);
             LoadLayoutCommand = new TaskCommand<XamDataGrid>(OnLoadCommandExecute);
@@ -80,79 +86,46 @@ namespace HighFreqUpdate.ViewModels
 
         private Task OnLoadCommandExecute(XamDataGrid grid)
         {
-
             timer.Stop();
             dispatcherTimer.Stop();
 
-            var str = File.ReadAllText(GridLayout);
-
-            byte[] bytes = Encoding.UTF8.GetBytes(str);
-
-            return dispatcherService.InvokeAsync(() =>
-            {
-                using (var memoryStream = new MemoryStream(bytes))
-                {
-                    grid.LoadCustomizations(memoryStream);
-                    timer.Start();
-                    dispatcherTimer.Start();
-                }
-
-
-                //grid customizations
-                var customizations = File.ReadAllText(GridCustomizations);
-
-                byte[] bytesCustomizations = Encoding.UTF8.GetBytes(customizations);
-
-
-                using (var ms = new MemoryStream(bytesCustomizations))
-                {
-                    IXmlSerializer x = ServiceLocator.Default.ResolveType<IXmlSerializer>();
-
-                    GridCustomizations c = x.Deserialize(typeof(GridCustomizations), ms) as GridCustomizations;
-
-                }
-            });
+            return gridPersistenceService.RestoreGrid(grid);
+       
         }
 
+        private void LoadCustomGridSettings(XamDataGrid grid, GridCustomizations gridCustomizations)
+        {
+            foreach (var gridCustomization in gridCustomizations.ColumnsStyle.Where(x => x.Value.HasData))
+            {
+                string columnName = gridCustomization.Key;
 
+                var column = grid.FieldLayouts[0].Fields.FirstOrDefault(x => x.Name == columnName);
 
+                var style = new Style(typeof(CellValuePresenter));
+
+                if (!string.IsNullOrEmpty(gridCustomization.Value.ForeColor))
+                {
+                    style.Setters.Add(new Setter(Control.ForegroundProperty,
+                        new SolidColorBrush((Color)ColorConverter.ConvertFromString(gridCustomization.Value.ForeColor))));
+                }
+
+                if (!string.IsNullOrEmpty(gridCustomization.Value.BackGroundColor))
+                {
+                    style.Setters.Add(new Setter(Control.BackgroundProperty,
+                        new SolidColorBrush((Color)ColorConverter.ConvertFromString(gridCustomization.Value.BackGroundColor))));
+                }
+
+                column.CellValuePresenterStyle = style;
+
+            }
+        }
 
         private Task OnSaveCommandExecute(XamDataGrid grid)
         {
             timer.Stop();
             dispatcherTimer.Stop();
 
-            return dispatcherService.InvokeAsync(() =>
-            {
-                using (MemoryStream memoryStream = new MemoryStream())
-                {
-                    grid.SaveCustomizations(memoryStream);
-
-                    byte[] bytes = memoryStream.ToArray();
-
-                    var str = Encoding.UTF8.GetString(bytes);
-
-                    var externalInformations = GetGridExternalInformations(grid);
-
-                    IXmlSerializer x = ServiceLocator.Default.ResolveType<IXmlSerializer>();
-
-                    using (var ms = new MemoryStream())
-                    {
-                        x.Serialize(externalInformations, ms);
-
-                        byte[] bytes2 = ms.ToArray();
-
-                        var str1 = Encoding.UTF8.GetString(bytes2);
-
-                        File.WriteAllText(GridCustomizations, str1);
-                    }
-
-                    File.WriteAllText(GridLayout, str);
-
-                    timer.Start();
-                    dispatcherTimer.Start();
-                }
-            });
+            return gridPersistenceService.PersistGrid(grid);
         }
 
         public static GridCustomizations GetGridExternalInformations(XamDataGrid grid)
