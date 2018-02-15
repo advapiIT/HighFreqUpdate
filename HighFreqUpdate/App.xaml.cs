@@ -10,6 +10,8 @@
     using Catel.Logging;
     using Catel.Reflection;
     using Catel.Windows;
+    using HighFreqUpdate.Services;
+    using HighFreqUpdate.Services.Interfaces;
 
     /// <summary>
     /// Interaction logic for App.xaml
@@ -45,8 +47,8 @@
 
             // TODO: Register custom types in the ServiceLocator
             //Log.Info("Registering custom types");
-            //var serviceLocator = ServiceLocator.Default;
-            //serviceLocator.RegisterType<IMyInterface, IMyClass>();
+            var serviceLocator = ServiceLocator.Default;
+            serviceLocator.RegisterType<IGridPersistenceService, GridPersistenceService>();
 
             //StyleHelper.CreateStyleForwardersForDefaultStyles();
 
