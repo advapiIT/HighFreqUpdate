@@ -11,7 +11,6 @@ using HighFreqUpdate.Models;
 using HighFreqUpdate.ViewModels;
 using Catel.IoC;
 using System;
-using Catel.ExceptionHandling;
 using HighFreqUpdate.Helpers;
 
 namespace HighFreqUpdate.Behaviors
