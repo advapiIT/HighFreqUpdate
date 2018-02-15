@@ -76,6 +76,7 @@
     <Compile Include="Grid\GridCustomizations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\GridPersistenceService.cs" />
+    <Compile Include="Services\DockManagerPersistenceHelper.cs" />
     <Compile Include="Services\Interfaces\IDockManagerPersistenceService.cs" />
     <Compile Include="Services\Interfaces\IGridPersistenceService.cs" />
   </ItemGroup>

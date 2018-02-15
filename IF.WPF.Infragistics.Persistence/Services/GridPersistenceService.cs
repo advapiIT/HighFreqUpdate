@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Catel;
+using Catel.IO;
 using Catel.Runtime.Serialization.Xml;
 using Catel.Services;
 using Infragistics.Windows.DataPresenter;
@@ -14,11 +15,12 @@ namespace IF.WPF.Infragistics.Persistence
 {
     public class GridPersistenceService : IGridPersistenceService
     {
+        #region Variables
         private readonly IDispatcherService dispatcherService;
         private readonly IXmlSerializer xmlSerializer;
+        #endregion
 
-        private const string GridSaves = "c:\\temp\\prova123.xml";
-
+        #region Constructor
         public GridPersistenceService(IDispatcherService dispatcherService, IXmlSerializer xmlSerializer)
         {
             Argument.IsNotNull(() => dispatcherService);
@@ -27,12 +29,15 @@ namespace IF.WPF.Infragistics.Persistence
             this.dispatcherService = dispatcherService;
             this.xmlSerializer = xmlSerializer;
         }
+        #endregion
 
         #region IGridPersistenceService region
-        public Task PersistGrid(XamDataGrid grid)
+        public Task PersistGrid(XamDataGrid grid, Stream stream, bool closeStream = false)
         {
             return dispatcherService.InvokeAsync(() =>
             {
+                stream.Position = 0L;
+
                 GridCustomizations gridCustomizations = null;
 
                 string layout = string.Empty;
@@ -54,17 +59,26 @@ namespace IF.WPF.Infragistics.Persistence
 
                     byte[] bytes = memoryStream.ToArray();
 
-                    File.WriteAllBytes(GridSaves, bytes);
-                }
+                    stream.Write(bytes, 0, (int)bytes.Length);
 
+
+                }
+                if (closeStream)
+                {
+                    stream.Flush();
+                    stream.Close();
+                    stream.Dispose();
+                }
             });
         }
 
-        public Task RestoreGrid(XamDataGrid grid)
+        public Task RestoreGrid(XamDataGrid grid, Stream stream, bool closeStream = false)
         {
             return dispatcherService.InvokeAsync(() =>
             {
-                byte[] bytes = File.ReadAllBytes(GridSaves);
+                stream.Position = 0L;
+
+                byte[] bytes = stream.ToByteArray();
 
                 using (var memoryStream = new MemoryStream(bytes))
                 {
@@ -83,6 +97,13 @@ namespace IF.WPF.Infragistics.Persistence
                     }
 
                     SetGridExternalInformations(grid, gridCustomizations);
+                }
+
+                if (closeStream)
+                {
+                    stream.Flush();
+                    stream.Close();
+                    stream.Dispose();
                 }
             });
         }
@@ -115,7 +136,7 @@ namespace IF.WPF.Infragistics.Persistence
             }
         }
 
-        public static GridCustomizations GetGridExternalInformations(XamDataGrid grid)
+        private static GridCustomizations GetGridExternalInformations(XamDataGrid grid)
         {
             var gridCustomizations = new GridCustomizations();
 

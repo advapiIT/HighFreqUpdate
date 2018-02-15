@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
@@ -81,8 +82,11 @@ namespace HighFreqUpdate.ViewModels
             timer.Stop();
             dispatcherTimer.Stop();
 
-            await gridPersistenceService.RestoreGrid(grid);
-
+            using (var f = File.OpenRead("c:\\temp\\paolo123456.xml"))
+            {
+                await gridPersistenceService.RestoreGrid(grid, f);
+            }
+            
             timer.Start();
             dispatcherTimer.Start();
 
@@ -94,14 +98,14 @@ namespace HighFreqUpdate.ViewModels
             timer.Stop();
             dispatcherTimer.Stop();
 
-            await gridPersistenceService.PersistGrid(grid);
+            using (var f = File.OpenWrite("c:\\temp\\paolo123456.xml"))
+            {
+                await gridPersistenceService.PersistGrid(grid,f);
+            }
 
             timer.Start();
             dispatcherTimer.Start();
         }
-
-       
-
 
         private void DispatcherTimer_Tick1(object sender, EventArgs e)
         {
