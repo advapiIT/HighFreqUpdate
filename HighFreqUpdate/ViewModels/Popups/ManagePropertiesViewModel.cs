@@ -6,10 +6,11 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using Infragistics.Windows.DataPresenter;
 
-namespace HighFreqUpdate.ViewModels.Popups
+namespace HighFreqUpdate.ViewModels
 {
-    public class ManagePropertiesViewModelBase : Catel.MVVM.ViewModelBase
+    public class ManagePropertiesViewModel : Catel.MVVM.ViewModelBase
     {
         public ObservableCollection<ColumnItem> Columns
         {
@@ -165,13 +166,13 @@ namespace HighFreqUpdate.ViewModels.Popups
         }
         public static readonly PropertyData ShowDateOptionsProperty = RegisterProperty("ShowDateOptions", typeof(bool));
 
-        public object Grid { get; set; }
+        public XamDataGrid Grid { get; set; }
         public ManagePropertiesModel managePropertiesModel { get; set; }
         public bool WinResult { get; set; }
 
         public override string Title => "Gestione Proprietà";
 
-        public ManagePropertiesViewModelBase(ManagePropertiesModel managePropertiesModel)
+        public ManagePropertiesViewModel(ManagePropertiesModel managePropertiesModel)
         {
             this.managePropertiesModel = managePropertiesModel;
         }
@@ -359,7 +360,6 @@ namespace HighFreqUpdate.ViewModels.Popups
             SelectedColumn = managePropertiesModel.SelectedColumn == null ? Columns.First() : Columns.FirstOrDefault(x => x.Name == managePropertiesModel.SelectedColumn);
             Grid = managePropertiesModel.Grid;
         }
-
 
         protected override async Task<bool> SaveAsync()
         {

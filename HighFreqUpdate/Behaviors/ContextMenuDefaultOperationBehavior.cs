@@ -274,6 +274,14 @@ namespace HighFreqUpdate.Behaviors
                 };
 
                 lst.Add(menuItem1);
+
+                var menuItem3 = new XamMenuItem
+                {
+                    Header = "Gestione proprietà",
+                    Command = DefaultRadGridContextMenuCommands.PropertiesCommand
+                };
+
+                lst.Add(menuItem3);
             }
 
             return lst;

@@ -134,22 +134,30 @@
     <Compile Include="Helpers\GridCustomizationHelpers.cs" />
     <Compile Include="Helpers\GridRowSizeHelper.cs" />
     <Compile Include="Interfaces\IStatus.cs" />
+    <Compile Include="Models\AggregatorItem.cs" />
+    <Compile Include="Models\AlignItem.cs" />
     <Compile Include="Models\ColumnItem.cs" />
     <Compile Include="Models\DealSpotVisual.cs" />
     <Compile Include="Models\DealVisualBase.cs" />
+    <Compile Include="Models\FormatItem.cs" />
     <Compile Include="Models\ManageColorModel.cs" />
     <Compile Include="Models\ManageFontModel.cs" />
+    <Compile Include="Models\ManagePropertiesModel.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Selector\DecimalFormatTemplateSelectorNew.cs" />
     <Compile Include="Services\GridPersistenceService.cs" />
     <Compile Include="Services\Interfaces\IGridPersistenceService.cs" />
     <Compile Include="ViewModels\Popups\ManageColorViewModel.cs" />
     <Compile Include="ViewModels\Popups\ManageFontViewModel.cs" />
+    <Compile Include="ViewModels\Popups\ManagePropertiesViewModel.cs" />
     <Compile Include="Views\Popups\ManageColorView.xaml.cs">
       <DependentUpon>ManageColorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Popups\ManageFontView.xaml.cs">
       <DependentUpon>ManageFontView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Popups\ManagePropertiesView.xaml.cs">
+      <DependentUpon>ManagePropertiesView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SampleView.xaml.cs">
       <DependentUpon>SampleView.xaml</DependentUpon>
@@ -164,6 +172,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Popups\ManageFontView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Popups\ManagePropertiesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -26,13 +26,7 @@ namespace HighFreqUpdate
         [DataMember]
         public string BackGroundColor { get; set; }
 
-        public bool HasData
-        {
-            get
-            {
-                return !string.IsNullOrEmpty(BackGroundColor) ||
-                       !string.IsNullOrEmpty(ForeColor);
-            }
-        }
+        public bool HasData => !string.IsNullOrEmpty(BackGroundColor) ||
+                               !string.IsNullOrEmpty(ForeColor);
     }
 }

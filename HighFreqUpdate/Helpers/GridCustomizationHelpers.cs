@@ -10,14 +10,11 @@ namespace HighFreqUpdate.Helpers
 
         public static readonly Type[] NumericTypes = { typeof(int), typeof(int?), typeof(double), typeof(double?) };
 
-        /// <summary>
-        /// Key represents the Telerik one, Value ours
-        /// </summary>
         public static Dictionary<int, int> MappingTextAligment = new Dictionary<int, int>
         {
             { 0, 0 }, //Left
-            { 2, 1 }, //Center
-            { 1, 2 }, //Right
+            { 1, 1 }, //Center
+            { 2, 2 }, //Right
             { 3, 3 }  //Right
         };
 
