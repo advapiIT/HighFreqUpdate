@@ -23,7 +23,7 @@ namespace IF.WPF.Infragistics.Persistence.Services.Interfaces
             this.xmlSerializer = xmlSerializer;
         }
 
-        public Task PersistGrid(XamDockManager dockManager, Stream stream, bool closeStream = false)
+        public Task PersistGridAsync(XamDockManager dockManager, Stream stream, bool closeStream = false)
         {
             return dispatcherService.InvokeAsync(() =>
             {
@@ -39,7 +39,7 @@ namespace IF.WPF.Infragistics.Persistence.Services.Interfaces
             });
         }
 
-        public Task RestoreGrid(XamDockManager dockManager, Stream stream, bool closeStream = false)
+        public Task RestoreGridAsync(XamDockManager dockManager, Stream stream, bool closeStream = false)
         {
             stream.Position = 0L;
 

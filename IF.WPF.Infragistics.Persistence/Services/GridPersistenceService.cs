@@ -32,7 +32,7 @@ namespace IF.WPF.Infragistics.Persistence
         #endregion
 
         #region IGridPersistenceService region
-        public Task PersistGrid(XamDataGrid grid, Stream stream, bool closeStream = false)
+        public Task PersistGridAsync(XamDataGrid grid, Stream stream, bool closeStream = false)
         {
             return dispatcherService.InvokeAsync(() =>
             {
@@ -72,7 +72,7 @@ namespace IF.WPF.Infragistics.Persistence
             });
         }
 
-        public Task RestoreGrid(XamDataGrid grid, Stream stream, bool closeStream = false)
+        public Task RestoreGridAsync(XamDataGrid grid, Stream stream, bool closeStream = false)
         {
             return dispatcherService.InvokeAsync(() =>
             {

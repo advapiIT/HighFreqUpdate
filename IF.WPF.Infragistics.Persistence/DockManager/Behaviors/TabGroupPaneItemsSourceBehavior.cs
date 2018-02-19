@@ -1,6 +1,7 @@
 ﻿using Catel.Collections;
 using Catel.IoC;
 using Catel.MVVM;
+using Catel.MVVM.Views;
 using IF.WPF.Infragistics.Persistence.DockManager.Interfaces;
 using IF.WPF.Infragistics.Persistence.Extensions;
 using Infragistics.Windows.DockManager;
@@ -136,18 +137,16 @@ namespace IF.WPF.Infragistics.Persistence.DockManager.Behaviors
 
             if (HeaderTemplate != null)
             {
-                //   container.HeaderTemplate = HeaderTemplate;
+                container.HeaderTemplate = HeaderTemplate;
+                container.Header = ((IView)view).DataContext;
 
-                var headerTemplate = Application.Current.Resources["PaneHeaderTemplate"] as DataTemplate;
+                container.TabHeaderTemplate = HeaderTemplate;
+                container.TabHeader = ((IView)view).DataContext;
 
-                Binding binding = new Binding { Source = headerTemplate };
-                Binding bindingViewModel = new Binding { Source = item };
+                //This is working but I set it as a string
 
-                BindingOperations.SetBinding(container, HeaderedContentControl.HeaderTemplateProperty, binding);
-                BindingOperations.SetBinding(container, ContentPane.TabHeaderTemplateProperty, binding);
-
-                BindingOperations.SetBinding(container, HeaderedContentControl.HeaderProperty, bindingViewModel);
-                BindingOperations.SetBinding(container, ContentPane.TabHeaderProperty, bindingViewModel);
+                //Binding bindingViewModel = new Binding {Path = new PropertyPath("Title"), Source = item};
+                //BindingOperations.SetBinding(container, HeaderedContentControl.HeaderProperty, bindingViewModel);
             }
 
             Binding persistenceBagBinding = new Binding { Source = item, Path = new PropertyPath("PersistenceBag") };
@@ -160,6 +159,8 @@ namespace IF.WPF.Infragistics.Persistence.DockManager.Behaviors
 
             return container;
         }
+
+
 
         private void Container_Closed(object sender, PaneClosedEventArgs e)
         {

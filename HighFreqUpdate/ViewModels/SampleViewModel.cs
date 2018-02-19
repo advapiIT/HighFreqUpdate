@@ -84,7 +84,7 @@ namespace HighFreqUpdate.ViewModels
 
             using (var f = File.OpenRead("c:\\temp\\paolo123456.xml"))
             {
-                await gridPersistenceService.RestoreGrid(grid, f);
+                await gridPersistenceService.RestoreGridAsync(grid, f);
             }
             
             timer.Start();
@@ -100,7 +100,7 @@ namespace HighFreqUpdate.ViewModels
 
             using (var f = File.OpenWrite("c:\\temp\\paolo123456.xml"))
             {
-                await gridPersistenceService.PersistGrid(grid,f);
+                await gridPersistenceService.PersistGridAsync(grid,f);
             }
 
             timer.Start();

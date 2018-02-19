@@ -6,8 +6,8 @@ namespace IF.WPF.Infragistics.Persistence
 {
     public interface IGridPersistenceService
     {
-        Task PersistGrid(XamDataGrid grid, Stream stream, bool closeStream = false);
+        Task PersistGridAsync(XamDataGrid grid, Stream stream, bool closeStream = false);
 
-        Task RestoreGrid(XamDataGrid grid, Stream stream, bool closeStream = false);
+        Task RestoreGridAsync(XamDataGrid grid, Stream stream, bool closeStream = false);
     }
 }

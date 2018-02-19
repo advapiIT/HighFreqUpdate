@@ -6,8 +6,8 @@ namespace IF.WPF.Infragistics.Persistence.Services.Interfaces
 {
     public interface IDockManagerPersistenceService
     {
-        Task PersistGrid(XamDockManager dockManager, Stream stream, bool closeStream = false);
+        Task PersistGridAsync(XamDockManager dockManager, Stream stream, bool closeStream = false);
 
-        Task RestoreGrid(XamDockManager dockManager, Stream stream, bool closeStream = false);
+        Task RestoreGridAsync(XamDockManager dockManager, Stream stream, bool closeStream = false);
     }
 }

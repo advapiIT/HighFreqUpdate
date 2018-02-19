@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HighFreqUpdate", "HighFreqU
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IF.WPF.Infragistics.Persistence", "IF.WPF.Infragistics.Persistence\IF.WPF.Infragistics.Persistence.csproj", "{4A4BF683-D1E8-45D1-8736-3B2A9422E83F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DockingInfragistics", "DockingInfragistics\DockingInfragistics.csproj", "{540936AE-32E2-48F3-B2AE-574E9EFA166F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{4A4BF683-D1E8-45D1-8736-3B2A9422E83F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A4BF683-D1E8-45D1-8736-3B2A9422E83F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4A4BF683-D1E8-45D1-8736-3B2A9422E83F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{540936AE-32E2-48F3-B2AE-574E9EFA166F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{540936AE-32E2-48F3-B2AE-574E9EFA166F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{540936AE-32E2-48F3-B2AE-574E9EFA166F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{540936AE-32E2-48F3-B2AE-574E9EFA166F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
