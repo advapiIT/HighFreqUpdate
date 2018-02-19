@@ -130,6 +130,7 @@
     <Compile Include="Helpers\ContextMenuHelper.cs" />
     <Compile Include="Helpers\GridCustomizationHelpers.cs" />
     <Compile Include="Helpers\GridRowSizeHelper.cs" />
+    <Compile Include="Interfaces\ICheckable.cs" />
     <Compile Include="Interfaces\IStatus.cs" />
     <Compile Include="Models\AggregatorItem.cs" />
     <Compile Include="Models\AlignItem.cs" />

@@ -1,8 +1,9 @@
 ﻿using System;
+using HighFreqUpdate.Interfaces;
 
 namespace HighFreqUpdate.Models
 {
-    public class DealSpotVisual : DealVisualWithSettlementBase
+    public class DealSpotVisual : DealVisualWithSettlementBase, ICheckable
     {
         private double? qtaDiv1;
         public override string Type => "FxSpot";
@@ -19,5 +20,7 @@ namespace HighFreqUpdate.Models
         public string CurOutSettlInfo { get; set; }
 
         public int? DealRevertedId { get; set; }
+
+        public bool IsChecked { get; set; }
     }
 }

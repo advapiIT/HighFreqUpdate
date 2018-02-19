@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,6 +24,8 @@ namespace HighFreqUpdate.ViewModels
         private readonly IGridPersistenceService gridPersistenceService;
         private readonly IDispatcherService dispatcherService;
 
+
+        public string SumText { get; set; }
 
         public FastObservableCollection<DealSpotVisual> DataItems { get; set; }
         private IDictionary<int, DealSpotVisual> mappingDummyItems { get; set; }
@@ -119,8 +122,10 @@ namespace HighFreqUpdate.ViewModels
                     {
                         if (mappingDummyItems.ContainsKey(item.Id))
                         {
+                            var isChecked = mappingDummyItems[item.Id].IsChecked;
                             mappingDummyItems[item.Id].PopulateWith(item);
                             mappingDummyItems[item.Id].IsChanged = true;
+                            mappingDummyItems[item.Id].IsChecked = isChecked;
                         }
                         else
                         {
@@ -159,7 +164,13 @@ namespace HighFreqUpdate.ViewModels
 
                     dummyItem.IdCross = cross;
 
+                    dummyItem.PropertyChanged += DummyItem_PropertyChanged;
+
+                    RaisePropertyChanged(() => AllMembersAreChecked);
+
                     queue.Enqueue(dummyItem);
+
+                    CalculateTotal();
                 }
 
                 lock (hasToUpdateLock)
@@ -170,7 +181,57 @@ namespace HighFreqUpdate.ViewModels
                 dispatcherTimer.Start();
             }
         }
+
+        private void DummyItem_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "IsChecked")
+            {
+                CalculateTotal();
+            }
+        }
+
+        private void CalculateTotal()
+        {
+            double sum = 0.0;
+
+            foreach (var item in DataItems)
+            {
+                if (!item.IsChecked)
+                    sum += item.QtaDiv1 ?? 0;
+            }
+
+            SumText = sum.ToString(CultureInfo.InvariantCulture);
+        }
+
+
+        public bool? AllMembersAreChecked
+        {
+            get
+            {
+                bool? value = null;
+                for (int i = 0; i < DataItems.Count; ++i)
+                {
+                    if (i == 0)
+                    {
+                        value = DataItems[0].IsChecked;
+                    }
+                    else if (value != DataItems[i].IsChecked)
+                    {
+                        value = null;
+                        break;
+                    }
+                }
+
+                return value;
+            }
+            set
+            {
+                if (value == null)
+                    return;
+
+                foreach (var member in DataItems)
+                    member.IsChecked = value.Value;
+            }
+        }
     }
 }
-
-
