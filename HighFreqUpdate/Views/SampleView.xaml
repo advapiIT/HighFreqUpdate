@@ -41,6 +41,9 @@
         <StackPanel Orientation="Horizontal">
             <Button Content="Save" Command="{Binding SaveLayoutCommand}" CommandParameter="{Binding ElementName=dataGrid}"/>
             <Button Content="Load" Margin="5,0,0,0" Command="{Binding LoadLayoutCommand}" CommandParameter="{Binding ElementName=dataGrid}"/>
+
+            <TextBlock Margin="25,0,0,0" Text="TOTALE = " VerticalAlignment="Center"/>
+            <TextBlock Margin="5,0,0,0" Text="{Binding SumText}" VerticalAlignment="Center"/>
         </StackPanel>
 
         <igDP:XamDataGrid x:Name="dataGrid" DataSource="{Binding DataItems}" Height="600" Grid.Row="1" Theme="IGTheme" GroupByAreaLocation="AboveDataArea" IsGroupByAreaExpanded="True">
@@ -94,6 +97,35 @@
                     <Setter Property="Background">
                         <Setter.Value>
                             <SolidColorBrush Color="Transparent" />
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+
+                <Style TargetType="{x:Type igDP:RecordSelector}"
+                       BasedOn="{x:Null}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type igDP:RecordSelector}">
+                                <CheckBox HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          IsChecked="{Binding Path=DataItem.IsChecked, Mode=TwoWay}" />
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+
+                <!-- This Style puts a CheckBox into the header area above the record selectors. -->
+                <Style TargetType="{x:Type igDP:HeaderPrefixArea}"
+                       BasedOn="{x:Null}">
+                    <Setter Property="Visibility"
+                            Value="Visible" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type igDP:HeaderPrefixArea}">
+                                <CheckBox HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          IsChecked="{Binding Path=DataPresenter.DataContext.AllMembersAreChecked, Mode=TwoWay}" />
+                            </ControlTemplate>
                         </Setter.Value>
                     </Setter>
                 </Style>
