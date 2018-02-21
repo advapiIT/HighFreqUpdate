@@ -261,210 +261,37 @@ namespace HighFreqUpdate.Behaviors
         public static TaskCommand<HeaderCommandParameter> ChangeFontCommand { get; }
         private static Task OnChangeFontCommandExecute(HeaderCommandParameter parameter)
         {
-            Argument.IsNotNull(() => parameter);
-
-            var manageFontModel = new ManageFontModel { Grid = parameter.Grid };
-
-            var viewModel = ViewModelFactory.CreateViewModel<ManageFontViewModel>(manageFontModel);
-
-            return UIVisualizerService.ShowDialogAsync(viewModel, OnManageFontCompleted);
+            return Task.FromResult(0);
         }
 
         private static void OnManageFontCompleted(object sender, UICompletedEventArgs e)
         {
-            if (!(e.DataContext is ManageFontViewModel dataContext) || !e.Result.HasValue || !e.Result.Value) return;
-            try
-            {
-                var grid = dataContext.Grid;
-
-                grid.SetValue(Control.FontSizeProperty, Convert.ToDouble(dataContext.SelectedFontSize));
-                grid.SetValue(Control.FontFamilyProperty, new FontFamily(dataContext.SelectedFont));
-                grid.SetValue(Control.FontStyleProperty, GridCustomizationHelpers.GetFontStyleFomString(dataContext.SelectedFontStyle));
-
-                grid.FieldSettings.CellHeight = GridRowSizeHelper.GetRowHeightFromFontSize(grid.FontSize);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-                //ServiceLocator.Default.ResolveType<IExceptionService>().Process(() => throw new DefaultException(ex));
-            }
+            return;
+            
         }
 
         public static TaskCommand<HeaderCommandParameter> ChangeColorCommand { get; }
         private static Task OnChangeColorCommandExecute(HeaderCommandParameter parameter)
         {
-            var manageColorModel = new ManageColorModel
-            {
-                Grid = parameter.Grid,
-                SelectedColumn = parameter.Column
-            };
-
-            var modello = ViewModelFactory.CreateViewModel<ManageColorViewModel>(manageColorModel);
-
-            return UIVisualizerService.ShowDialogAsync(modello, OnChangeColorCompleted);
+            return Task.FromResult(0);
         }
 
         private static void OnChangeColorCompleted(object sender, UICompletedEventArgs e)
         {
-            if (!(e.DataContext is ManageColorViewModel dataContext) || !e.Result.HasValue || !e.Result.Value) return;
-            try
-            {
-                var grid = dataContext.Grid;
-
-                var columnsColors = dataContext.Columns;
-
-                if (grid.FieldLayouts.FirstOrDefault() != null)
-                {
-                    var fields = grid.FieldLayouts.First().Fields;
-
-                    foreach (var field in fields)
-                    {
-                        var columnWithColor = columnsColors.FirstOrDefault(x => x.Name == (string)field.Label);
-
-                        if (columnWithColor != null)
-                        {
-                            if ((columnWithColor.ForeColor.HasValue || columnWithColor.BackColor.HasValue) && columnWithColor.IsChangedColor)
-                            {
-                                var style = new Style();
-
-                                if (columnWithColor.ForeColor.HasValue)
-                                    style.Setters.Add(new Setter(Control.ForegroundProperty, new SolidColorBrush(columnWithColor.ForeColor.Value)));
-                                if (columnWithColor.BackColor.HasValue)
-                                    style.Setters.Add(new Setter(Control.BackgroundProperty, new SolidColorBrush(columnWithColor.BackColor.Value)));
-
-                                field.CellValuePresenterStyle = style;
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-                //ServiceLocator.Default.ResolveType<IExceptionService>().Process(() => throw new DefaultException(ex));
-            }
+           return;
+            
         }
 
         public static TaskCommand<HeaderCommandParameter> PropertiesCommand { get; }
         private static Task OnPropertiesCommandExecute(HeaderCommandParameter parameter)
         {
-            var managePropertiesModel = new ManagePropertiesModel();
-
-            managePropertiesModel.Grid = parameter.Grid;
-
-            managePropertiesModel.SelectedColumn = parameter.Column;// parameter.Grid.Selection != null ? parameter.Grid.Columns[parameter.ColumnClicked].Header : null;
-
-            var viewModel = ViewModelFactory.CreateViewModel<ManagePropertiesViewModel>(managePropertiesModel, null);
-
-            return UIVisualizerService.ShowAsync(viewModel, OnPropertiesCommandCompleted);
+            return Task.FromResult(0);
         }
 
         private static void OnPropertiesCommandCompleted(object sender, UICompletedEventArgs e)
         {
-            if (!(e.DataContext is ManagePropertiesViewModel dataContext) || !dataContext.WinResult) return;
-            try
-            {
-                var grid = dataContext.Grid;
-                var columns = dataContext.Columns;
-
-                if (grid.FieldLayouts?.FirstOrDefault() != null)
-                {
-                    var fields = grid.FieldLayouts?.First().Fields;
-                    var summaryDefinition = grid.FieldLayouts?.First().SummaryDefinitions;
-
-                    foreach (Field field in fields)
-                    {
-                        var column = columns.FirstOrDefault(x => x.Name == field.Label.ToString());
-
-                        if (column != null)
-                        {
-                            if (column.Type == typeof(int?) || column.Type == typeof(double?) || column.Type == typeof(int) || column.Type == typeof(double))
-                            {
-                                if (column.EnableCheckThousandSeparator)
-                                {
-                                    field.Format = $"N{column.Decimals}";
-
-                                    if (!column.EnableThousandSeparator)
-                                        field.Format = $"F{column.Decimals}";
-                                }
-                                else
-                                {
-                                    field.Format = field.Format != null ? $"{field.Format.Substring(0, 1)}{column.Decimals}" : $"N{column.Decimals}";
-                                }
-
-                                if (column.EnableAggregator)
-                                {
-                                    SummaryCalculator aggr = column.Aggregator == 1 ? SummaryCalculator.Sum : (column.Aggregator == 2 ? SummaryCalculator.Count : (SummaryCalculator)null);
-
-                                    if (aggr != null)
-                                        summaryDefinition.Add(aggr, field.Name);
-                                }
-                                else
-                                {
-                                    if (summaryDefinition.FirstOrDefault(x => x.SourceFieldName == field.Name) != null)
-                                        summaryDefinition.Remove(summaryDefinition.First(x => x.SourceFieldName == field.Name));
-                                }
-
-                                //col.IsAggregableByDefault = column.EnableAggregator;
-                            }
-                            else if (column.Type == typeof(DateTime?) || column.Type == typeof(DateTime))
-                            {
-                                field.Format = dataContext.Formats.First(x => x.FormatId == column.Format).FormatName;
-                            }
-
-                            switch (column.Align)
-                            {
-                                case 0:
-                                    field.HorizontalContentAlignment = HorizontalAlignment.Left;
-                                    break;
-                                case 1:
-                                    field.HorizontalContentAlignment = HorizontalAlignment.Center;
-                                    break;
-                                case 2:
-                                    field.HorizontalContentAlignment = HorizontalAlignment.Right;
-                                    break;
-                            }
-
-                            //if (column.IsBlinking)
-                            //{
-                            //    col.IsBlinking = column.IsBlinking;
-                            //    col.BlinkColor = column.BlinkColor;
-                            //    col.BlinkFreq = column.BlinkingFrequency;
-                            //}
-                            //else
-                            //{
-                            //    col.IsBlinking = column.IsBlinking;
-                            //    col.BlinkColor = Colors.Transparent;
-                            //    col.BlinkFreq = 1;
-                            //}
-
-                            //if (column.IsForeColorNegativeEnabled)
-                            //{
-                            //    col.IsFontColorNegativeEnabled = column.IsForeColorNegativeEnabled;
-                            //    col.FontColorNegative = new SolidColorBrush(column.ForeColorNegative);
-                            //}
-                            //else
-                            //{
-                            //    col.IsFontColorNegativeEnabled = column.IsForeColorNegativeEnabled;
-                            //}
-
-                            field.FixedLocation = column.EnableFreezeColumn ? FixedFieldLocation.FixedToNearEdge : FixedFieldLocation.Scrollable;
-
-                            //col.AllowDragging = !column.EnableLockColumn;
-                        }
-                    }
-                }
-
-                grid.FieldSettings.CellHeight = GridRowSizeHelper.GetRowHeightFromFontSize(grid.FontSize);
-
-                //SetColumnTotal(grid);
-                //FlexGridTotalHelper.SetColumnTotal(grid);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-                //ServiceLocator.Default.ResolveType<IExceptionService>().Process(() => throw new DefaultException(ex));
-            }
+          
+            
         }
         #endregion
         #endregion
