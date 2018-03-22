@@ -8,6 +8,7 @@ using Infragistics.Windows.DockManager;
 using Infragistics.Windows.DockManager.Events;
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
@@ -23,6 +24,7 @@ namespace IF.WPF.Infragistics.Persistence.DockManager.Behaviors
         private readonly IViewLocator viewLocator;
 
         private IDictionary<InitialPaneLocation, TabGroupPane> tabGroupPanesMapping;
+        private DocumentContentHost documentContentHost;
 
         private TabGroupPane GetPane(string name)
         {
@@ -54,6 +56,9 @@ namespace IF.WPF.Infragistics.Persistence.DockManager.Behaviors
 
         void OnItemsSourcePropertyChanged(IList oldValue, IList newValue)
         {
+            if(tabGroupPanesMapping == null) return;
+            
+            
             tabGroupPanesMapping.ForEach(x => x.Value.Items.Clear());
 
             if (oldValue != null)
@@ -80,18 +85,42 @@ namespace IF.WPF.Infragistics.Persistence.DockManager.Behaviors
 
         private void AddItemToCorrectPane(object item, ContentPane contentPane)
         {
-            var intialDockPosition = item as IInitialPosition;
-
-            if (intialDockPosition != null)
+            try
             {
-                if (tabGroupPanesMapping.ContainsKey(intialDockPosition.InitialPaneLocation))
+                var intialDockPosition = item as IInitialPosition;
+
+                if (intialDockPosition != null)
                 {
-                    tabGroupPanesMapping[intialDockPosition.InitialPaneLocation].Items.Add(contentPane);
+                    if (tabGroupPanesMapping.ContainsKey(intialDockPosition.InitialDockState))
+                    {
+                        tabGroupPanesMapping[intialDockPosition.InitialDockState].Items.Add(contentPane);
+                    }
+                }
+                else
+                {
+                    var host = AssociatedObject.FindChildByType<DocumentContentHost>();
+
+                    var tabPane = host.Panes.FirstOrDefault().Panes.OfType<TabGroupPane>().FirstOrDefault();
+                    if (tabPane != null)
+                    {
+                        tabPane.Items.Add(contentPane);
+                    }
+                    else
+                    {
+                        var splitPane = new SplitPane();
+
+                        splitPane.Panes.Add(contentPane);
+
+                        host.Panes.FirstOrDefault().Panes.Add(splitPane);
+
+                    }
+                    
                 }
             }
-            else
+            catch (Exception ex)
             {
-                tabGroupPanesMapping[InitialPaneLocation.DockedTop].Items.Add(contentPane);
+
+                throw;
             }
         }
 
@@ -128,6 +157,7 @@ namespace IF.WPF.Infragistics.Persistence.DockManager.Behaviors
         protected ContentPane PrepareContainerForItem(object item)
         {
             ContentPane container = new ContentPane();
+
             var view = CreateViewContent(item) as FrameworkElement;
 
             container.SetValue(FrameworkElement.NameProperty, "n" + Guid.NewGuid().ToString().Split('-')[0]);
@@ -137,12 +167,15 @@ namespace IF.WPF.Infragistics.Persistence.DockManager.Behaviors
 
             if (HeaderTemplate != null)
             {
-                container.HeaderTemplate = HeaderTemplate;
-                container.Header = ((IView)view).DataContext;
+                container.Header = "CUAI";
+                //container.HeaderTemplate = HeaderTemplate;
+                //container.Header = ((IView)view).DataContext;
 
-                container.TabHeaderTemplate = HeaderTemplate;
-                container.TabHeader = ((IView)view).DataContext;
+                //container.TabHeaderTemplate = HeaderTemplate;
+                //container.TabHeader = ((IView)view).DataContext;
 
+                container.IsPinned = false;
+                
                 //This is working but I set it as a string
 
                 //Binding bindingViewModel = new Binding {Path = new PropertyPath("Title"), Source = item};
@@ -208,8 +241,19 @@ namespace IF.WPF.Infragistics.Persistence.DockManager.Behaviors
 
         private void AssociatedObject_Loaded(object sender, RoutedEventArgs e)
         {
-            var panes = AssociatedObject.FindChildrenByType<SplitPane>();
-            tabGroupPanesMapping = panes.ToDictionary(x => (InitialPaneLocation)x.GetValue(XamDockManager.InitialLocationProperty), x => x.FindChildByType<TabGroupPane>());
+            tabGroupPanesMapping= new Dictionary<InitialPaneLocation, TabGroupPane>();
+            var doc = AssociatedObject.ChildrenOfType<DocumentContentHost>().FirstOrDefault();
+
+            if (doc != null)
+            {
+                documentContentHost = doc;
+
+                
+                var panes2 = AssociatedObject.Panes.ToDictionary(x => (InitialPaneLocation)x.GetValue(XamDockManager.InitialLocationProperty), x => x.FindChildByType<TabGroupPane>());
+
+                if (panes2 != null)
+                    tabGroupPanesMapping.AddRange(panes2);
+            }
         }
 
         private static object CreateViewContent(object viewModel)

@@ -6,6 +6,6 @@ namespace DockingInfragistics.ViewModels
 {
     public class BottomViewModel : ViewModelBase, IInitialPosition
     {
-        public InitialPaneLocation InitialPaneLocation => InitialPaneLocation.DockedBottom;
+        public InitialPaneLocation InitialDockState => InitialPaneLocation.DockedRight;
     }
 }

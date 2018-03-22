@@ -4,6 +4,6 @@ namespace IF.WPF.Infragistics.Persistence.DockManager.Interfaces
 {
     public interface IInitialPosition
     {
-        InitialPaneLocation InitialPaneLocation { get; }
+        InitialPaneLocation InitialDockState { get; }
     }
 }
